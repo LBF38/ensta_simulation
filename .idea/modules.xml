@@ -4,7 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/TD1/TD1.iml" filepath="$PROJECT_DIR$/TD1/TD1.iml" />
       <module fileurl="file://$PROJECT_DIR$/../td_simulation/TD_1_base_common/TD_1_base_common.iml" filepath="$PROJECT_DIR$/../td_simulation/TD_1_base_common/TD_1_base_common.iml" />
-      <module fileurl="file://$PROJECT_DIR$/simulation_project.iml" filepath="$PROJECT_DIR$/simulation_project.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ensta_simulation.iml" filepath="$PROJECT_DIR$/ensta_simulation.iml" />
     </modules>
   </component>
 </project>
