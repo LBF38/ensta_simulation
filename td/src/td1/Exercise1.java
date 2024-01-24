@@ -1,3 +1,5 @@
+package td1;
+
 import enstabretagne.base.time.LogicalDateTime;
 import enstabretagne.base.time.LogicalDuration;
 

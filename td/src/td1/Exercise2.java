@@ -1,3 +1,5 @@
+package td1;
+
 import enstabretagne.base.logger.IRecordable;
 import enstabretagne.base.logger.Logger;
 
@@ -25,7 +27,7 @@ public class Exercise2 {
                 return "Personnes";
             }
         });
-        Logger.Information(null, null, "add some data from Dog class");
+        Logger.Information(null, null, "add some data from td1.Dog class");
         Logger.Terminate();
     }
 }

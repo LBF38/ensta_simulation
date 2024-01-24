@@ -1,3 +1,5 @@
+package td1;
+
 import enstabretagne.base.logger.ToRecord;
 
 import java.util.Random;
@@ -10,7 +12,7 @@ public class Dog {
     public Dog() {
         Random r = new Random();
         age = r.nextInt();
-        name = "Dog" + age;
+        name = "td1.Dog" + age;
     }
 
     @ToRecord(name = "Age")
