@@ -8,7 +8,6 @@ import java.util.ArrayList;
  */
 public class EntiteSimulee {
     private final InitData initData;
-    private ArrayList<SimEvent> events = new ArrayList<>();
     private SimuEngine engine;
 
     public EntiteSimulee(SimuEngine engine, InitData initData) {
@@ -18,6 +17,6 @@ public class EntiteSimulee {
     }
 
     public void addEvent(SimEvent event) {
-        this.events.add(event);
+        this.engine.addEvent(event);
     }
 }

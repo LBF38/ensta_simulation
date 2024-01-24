@@ -8,11 +8,13 @@ import enstabretagne.base.time.LogicalDateTime;
  */
 public abstract class SimEvent implements Comparable<SimEvent> {
     public LogicalDateTime occurrenceDate;
-    public EntiteSimulee entiteSimulee;
+    public EntiteSimulee from;
+    public EntiteSimulee to;
 
-    public SimEvent(LogicalDateTime occurrenceDate, EntiteSimulee entiteSimulee) {
+    public SimEvent(LogicalDateTime occurrenceDate, EntiteSimulee entiteSimulee, EntiteSimulee to) {
         this.occurrenceDate = occurrenceDate;
-        this.entiteSimulee = entiteSimulee;
+        this.from = entiteSimulee;
+        this.to = to;
     }
 
     public abstract void process();
