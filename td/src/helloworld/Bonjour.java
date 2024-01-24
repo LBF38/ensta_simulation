@@ -6,7 +6,7 @@ import enstabretagne.base.logger.Logger;
 import enstabretagne.base.time.LogicalDateTime;
 
 public class Bonjour extends SimEvent {
-    public Bonjour(LogicalDateTime scheduledDate, EntiteSimulee from, EntiteSimulee to) {
+    public Bonjour(LogicalDateTime scheduledDate, Etudiant from, Etudiant to) {
         super(scheduledDate, from, to);
     }
 
