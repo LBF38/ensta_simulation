@@ -1,6 +1,5 @@
 package helloworld;
 
-import engine.EntiteSimulee;
 import engine.SimEvent;
 import enstabretagne.base.logger.Logger;
 import enstabretagne.base.time.LogicalDateTime;

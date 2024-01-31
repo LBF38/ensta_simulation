@@ -7,13 +7,13 @@ import enstabretagne.base.time.LogicalDateTime;
  * A une date d'occurrence et est associé à une entité simulée.
  */
 public abstract class SimEvent implements Comparable<SimEvent> {
-    protected EntiteSimulee from;
-    protected EntiteSimulee to;
+    protected SimEntity from;
+    protected SimEntity to;
     private LogicalDateTime occurrenceDate;
 
-    public SimEvent(LogicalDateTime occurrenceDate, EntiteSimulee entiteSimulee, EntiteSimulee to) {
+    public SimEvent(LogicalDateTime occurrenceDate, SimEntity simEntity, SimEntity to) {
         this.occurrenceDate = occurrenceDate;
-        this.from = entiteSimulee;
+        this.from = simEntity;
         this.to = to;
     }
 

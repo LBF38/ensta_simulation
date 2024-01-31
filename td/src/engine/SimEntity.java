@@ -6,14 +6,14 @@ import enstabretagne.base.time.LogicalDateTime;
  * Entité simulée.
  * A des propriétés et doit être initialisée.
  */
-public abstract class EntiteSimulee {
+public abstract class SimEntity {
     private final InitData initData;
-    private SimuEngine engine;
+    private SimEngine engine;
 
-    public EntiteSimulee(SimuEngine engine, InitData initData) {
+    public SimEntity(SimEngine engine, InitData initData) {
         this.engine = engine;
         this.initData = initData;
-        this.engine.addEntiteSimulee(this);
+        this.engine.addEntity(this);
     }
 
     public InitData getInitData() {
@@ -28,7 +28,7 @@ public abstract class EntiteSimulee {
         send(event, null);
     }
 
-    public void send(SimEvent event, EntiteSimulee to) {
+    public void send(SimEvent event, SimEntity to) {
         event.from = this;
         event.to = to;
         this.engine.addEvent(event);

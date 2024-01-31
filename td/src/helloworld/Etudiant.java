@@ -1,11 +1,11 @@
 package helloworld;
 
-import engine.EntiteSimulee;
-import engine.SimuEngine;
+import engine.SimEntity;
+import engine.SimEngine;
 import enstabretagne.base.time.LogicalDuration;
 
-public class Etudiant extends EntiteSimulee {
-    public Etudiant(SimuEngine engine, EtudiantInitData initData) {
+public class Etudiant extends SimEntity {
+    public Etudiant(SimEngine engine, EtudiantInitData initData) {
         super(engine, initData);
 //        this.send(new Bonjour(LogicalDateTime.Now(), this, null), this);
     }

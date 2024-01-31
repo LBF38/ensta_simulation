@@ -7,21 +7,21 @@ import enstabretagne.simulation.basics.SortedList;
 
 import java.util.ArrayList;
 
-public class SimuEngine implements ISimulationDateProvider {
+public class SimEngine implements ISimulationDateProvider {
     private final LogicalDateTime start;
     private final LogicalDateTime end;
     private final SortedList<SimEvent> events = new SortedList<>();
-    protected ArrayList<EntiteSimulee> simulatedEntities = new ArrayList<>();
+    protected ArrayList<SimEntity> simulatedEntities = new ArrayList<>();
     private LogicalDateTime current;
 
-    public SimuEngine(LogicalDateTime startDate, LogicalDateTime endDate) {
+    public SimEngine(LogicalDateTime startDate, LogicalDateTime endDate) {
         this.start = startDate;
         this.current = this.start;
         this.end = endDate;
     }
 
-    public void addEntiteSimulee(EntiteSimulee entiteSimulee) {
-        this.simulatedEntities.add(entiteSimulee);
+    public void addEntity(SimEntity simEntity) {
+        this.simulatedEntities.add(simEntity);
     }
 
     protected void addEvent(SimEvent event) {
@@ -29,7 +29,7 @@ public class SimuEngine implements ISimulationDateProvider {
     }
 
     public void init() {
-        for (EntiteSimulee e : simulatedEntities) {
+        for (SimEntity e : simulatedEntities) {
             Logger.Detail(this, "init", "entity init = " + e);
             e.init();
         }
