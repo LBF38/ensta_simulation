@@ -1,7 +1,7 @@
 package helloworld;
 
-import engine.SimEntity;
 import engine.SimEngine;
+import engine.SimEntity;
 import enstabretagne.base.time.LogicalDuration;
 
 public class Etudiant extends SimEntity {

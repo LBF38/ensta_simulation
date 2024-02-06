@@ -1,242 +1,234 @@
 /**
-* Classe MoreRandom.java
-*@author Olivier VERRON
-*@version 1.0.
-*/
+ * Classe MoreRandom.java
+ *
+ * @author Olivier VERRON
+ * @version 1.0.
+ * <p>
+ * Fournit les classes nï¿½cessaires pour effectuer
+ * des simulations ï¿½ ï¿½vï¿½nements discrets basiques.
+ * @author Pascal CANTOT (cantot@wanadoo.fr]
+ * @version 1.0
+ */
 /**
- * Fournit les classes nécessaires pour effectuer
- * des simulations à événements discrets basiques.
- * @author 	Pascal CANTOT (cantot@wanadoo.fr]
- * @version	1.0
+ * Fournit les classes nï¿½cessaires pour effectuer
+ * des simulations ï¿½ ï¿½vï¿½nements discrets basiques.
+ * @author Pascal CANTOT (cantot@wanadoo.fr]
+ * @version 1.0
  */
 package enstabretagne.base.math;
 
 import java.util.Random;
-import java.lang.System;
 
 
 // TODO: Auto-generated Javadoc
+
 /**
- *  Etend les fonctions de génération de nombre aléatoires.
- *  Fournit notamment des générateurs suivant différentes lois.
+ *  Etend les fonctions de gï¿½nï¿½ration de nombre alï¿½atoires.
+ *  Fournit notamment des gï¿½nï¿½rateurs suivant diffï¿½rentes lois.
  *
  * @author cantot@wanadoo.fr
  * @see java.util.Random
  */
 public class MoreRandom extends Random {
 
-	
-		/** The Constant serialVersionUID. */
-		public static final long serialVersionUID = 1L;
 
-		/** The global seed. */
-		public static long globalSeed=0;
-		
-		/** The initial seed. */
-		private static long initialSeed = 0L;
-		
-		/**
-		 * Constructeur par défaut.
-		 * Le générateur aléatoire sera initialisé avec un germe "aléaloire" (horloge système)
-		 */
-		public MoreRandom()
-		{
-			
-			super();
-			initialSeed = globalSeed;
-		}
+    /** The Constant serialVersionUID. */
+    public static final long serialVersionUID = 1L;
 
-		/**
-		 * Constructeur initialisé avec un germe aléatoire explicité.
-		 * @param seed germe.
-		 */
-		public MoreRandom(long seed)
-		{
-			super(seed);
-			initialSeed = seed;
-		}
+    /** The global seed. */
+    public static long globalSeed = 0;
 
-		/**
-		 * Réinitialise le germe à la valeur indiquée.
-		 * @param seed germe.
-		 */
-		public void setSeed(long seed)
-		{
-			super.setSeed(seed);
-			initialSeed = seed;
-		}
+    /** The initial seed. */
+    private static long initialSeed = 0L;
 
-		/**
-		 * Retourne le germe initial.
-		 * @return germe.
-		 */
-		public long getSeed()
-		{
-			return initialSeed;
-		}
+    /**
+     * Constructeur par dï¿½faut.
+     * Le gï¿½nï¿½rateur alï¿½atoire sera initialisï¿½ avec un germe "alï¿½aloire" (horloge systï¿½me)
+     */
+    public MoreRandom() {
 
-		/**
-		 * Initialise le germe à une valeur aléatoire,
-		 * construite à partir de l'heure système.
-		 * Fournit une valeur de germe différente du germe précédent à chaque exécution,
-		 * même lors de deux appels se succédant à moins d'une milliseconde d'écart.
-		 * @return la valeur du germe.
-		 */
-		public long randomize()
-		{
-			long newSeed;
-			
-			// Boucle pour éviter d'avoir un germe identique si appels trop rapprochés.
-			// Inconvénient: prend jusqu'à 1ms maxi à s'exécuter (rarement)
-			// Avantage: très rapide dans la plupart des cas
-			// (donc peut-être mieux qu'un thread.sleep(1);)
-			do
-			{
-				newSeed = System.currentTimeMillis();
-			} while (newSeed == initialSeed);
-			setSeed(newSeed);
-			return newSeed;		
-		}
+        super();
+        initialSeed = globalSeed;
+    }
 
-		/**
-		 * Générateur pseudo-aléatoire suivant la loi uniforme sur [0,1].
-		 * @return un nombre pseudo-aléatoire entre 0.0 et 1.0, suivant la loi uniforme
-		 */
-		public double nextUniform()
-		{
-			return super.nextDouble();
-		}
-		
-		/**
-		 * Générateur pseudo-aléatoire suivant la loi uniforme sur [a,b].
-		 *
-		 * @param a the a
-		 * @param b the b
-		 * @return un nombre pseudo-aléatoire entre <code>a</code> et <code>b</code>,
-		 * 			suivant la loi uniforme
-		 */
-		public double nextUniform(double a, double b)
-		{
-			return a + (b-a)*nextDouble();
-		}
+    /**
+     * Constructeur initialisï¿½ avec un germe alï¿½atoire explicitï¿½.
+     * @param seed germe.
+     */
+    public MoreRandom(long seed) {
+        super(seed);
+        initialSeed = seed;
+    }
 
-		/**
-		 * Générateur pseudo-aléatoire suivant la loi triangulaire.
-		 * @param	a	borne inférieure;
-		 * @param	b	abscisse de la densité de probabilité maximale;
-		 * @param	c	borne supérieure.
-		 * @return	un nombre pseudo-aléatoir entre <code>a</code> et <code>c</code>
-		 * 			suivant une loi triangulaire(a,b,c).
-		 */
-		public double nextTriangle(double a, double b, double c)
-		{
-			double beta;
-			double t;
-			double u;
+    /**
+     * Rï¿½initialise le germe ï¿½ la valeur indiquï¿½e.
+     * @param seed germe.
+     */
+    public void setSeed(long seed) {
+        super.setSeed(seed);
+        initialSeed = seed;
+    }
 
-			// Méthode de la transformée inverse
-			u = nextUniform();
-			beta = (b-a)/(c-a);
-			if (u < beta)
-				t = Math.sqrt(beta*u);
-			else
-				t = 1.0 - Math.sqrt((1-beta)*(1-u));
+    /**
+     * Retourne le germe initial.
+     * @return germe.
+     */
+    public long getSeed() {
+        return initialSeed;
+    }
 
-			return a + (c-a)*t;
-		}
+    /**
+     * Initialise le germe ï¿½ une valeur alï¿½atoire,
+     * construite ï¿½ partir de l'heure systï¿½me.
+     * Fournit une valeur de germe diffï¿½rente du germe prï¿½cï¿½dent ï¿½ chaque exï¿½cution,
+     * mï¿½me lors de deux appels se succï¿½dant ï¿½ moins d'une milliseconde d'ï¿½cart.
+     * @return la valeur du germe.
+     */
+    public long randomize() {
+        long newSeed;
 
-		/**
-		 * Générateur pseudo-aléatoire suivant la loi exponentielle.
-		 * @param	lambda	paramètre de la loi
-		 * @return	un nombre pseudo-aléatoir suivant la loi exponentielle.
-		 */
-		public double nextExp(double lambda)
-		{
-			return (-1.0/lambda)*Math.log(1-nextUniform());
-		}
-		
-		/**
-		 * Do test.
-		 */
-		private static void doTest()
-		{
-			int i;
-			MoreRandom alea = new MoreRandom();
-			
-			System.out.println("*** TEST CLASSE moreRandom ***");
-			
-			// Teste les générateurs
-			System.out.print("Loi uniforme [0;1]: ");
-			System.out.println();
-			for (i=0; i<10; i++)
-				System.out.print(" " + alea.nextUniform());
-			System.out.println();
-			
-			System.out.print("Loi uniforme [-10;10]: ");
-			System.out.println();
-			for (i=0; i<10; i++)
-				System.out.print(" " + alea.nextUniform(-10.0,10.0));
-			System.out.println();
-			
-			System.out.print("Après changement de germe: ");
-			alea.setSeed(1234L);
-			System.out.println("(germe:" + alea.getSeed()+ ")");
-			for (i=0; i<10; i++)
-				System.out.print(" " + alea.nextUniform());
-			System.out.println();
+        // Boucle pour ï¿½viter d'avoir un germe identique si appels trop rapprochï¿½s.
+        // Inconvï¿½nient: prend jusqu'ï¿½ 1ms maxi ï¿½ s'exï¿½cuter (rarement)
+        // Avantage: trï¿½s rapide dans la plupart des cas
+        // (donc peut-ï¿½tre mieux qu'un thread.sleep(1);)
+        do {
+            newSeed = System.currentTimeMillis();
+        } while (newSeed == initialSeed);
+        setSeed(newSeed);
+        return newSeed;
+    }
 
-			System.out.print("Après randomize: ");
-			alea.randomize();
-			System.out.println("(germe:" + alea.getSeed()+ ")");
-			for (i=0; i<10; i++)
-				System.out.print(" " + alea.nextUniform());
-			System.out.println();
+    /**
+     * Gï¿½nï¿½rateur pseudo-alï¿½atoire suivant la loi uniforme sur [0,1].
+     * @return un nombre pseudo-alï¿½atoire entre 0.0 et 1.0, suivant la loi uniforme
+     */
+    public double nextUniform() {
+        return super.nextDouble();
+    }
 
-			System.out.print("Après randomize (bis): ");
-			alea.randomize();
-			System.out.println("(germe:" + alea.getSeed()+ ")");
-			for (i=0; i<10; i++)
-				System.out.print(" " + alea.nextUniform());
-			System.out.println();
+    /**
+     * Gï¿½nï¿½rateur pseudo-alï¿½atoire suivant la loi uniforme sur [a,b].
+     *
+     * @param a the a
+     * @param b the b
+     * @return un nombre pseudo-alï¿½atoire entre <code>a</code> et <code>b</code>,
+     * 			suivant la loi uniforme
+     */
+    public double nextUniform(double a, double b) {
+        return a + (b - a) * nextDouble();
+    }
 
-			System.out.print("Après reprise du germe: ");
-			alea.setSeed(1234L);
-			System.out.println("(germe:" + alea.getSeed()+ ")");
-			for (i=0; i<10; i++)
-				System.out.print(" " + alea.nextUniform());
-			System.out.println();
+    /**
+     * Gï¿½nï¿½rateur pseudo-alï¿½atoire suivant la loi triangulaire.
+     * @param    a    borne infï¿½rieure;
+     * @param    b    abscisse de la densitï¿½ de probabilitï¿½ maximale;
+     * @param    c    borne supï¿½rieure.
+     * @return un nombre pseudo-alï¿½atoir entre <code>a</code> et <code>c</code>
+     * 			suivant une loi triangulaire(a,b,c).
+     */
+    public double nextTriangle(double a, double b, double c) {
+        double beta;
+        double t;
+        double u;
 
-			System.out.print("Loi triangulaire(0,5,10): ");
-			System.out.println();
-			for (i=0; i<10; i++)
-				System.out.print(" " + alea.nextTriangle(0,5,10));
-			System.out.println();
-			
-			System.out.print("Loi exponentielle(1.0/10.0): ");
-			System.out.println();
-			for (i=0; i<10; i++)
-				System.out.print(" " + alea.nextExp(1.0/10.0));
-			System.out.println();
-			
-		}
+        // Mï¿½thode de la transformï¿½e inverse
+        u = nextUniform();
+        beta = (b - a) / (c - a);
+        if (u < beta)
+            t = Math.sqrt(beta * u);
+        else
+            t = 1.0 - Math.sqrt((1 - beta) * (1 - u));
 
-		/**
-		 * The main method.
-		 *
-		 * @param args the arguments
-		 */
-		public static void main(String[] args)
-		{
-			doTest();
-		}
+        return a + (c - a) * t;
+    }
 
-		public int nextInt(int origin, int bound) {
-			return nextInt(bound)+origin;
-		}
+    /**
+     * Gï¿½nï¿½rateur pseudo-alï¿½atoire suivant la loi exponentielle.
+     * @param    lambda    paramï¿½tre de la loi
+     * @return un nombre pseudo-alï¿½atoir suivant la loi exponentielle.
+     */
+    public double nextExp(double lambda) {
+        return (-1.0 / lambda) * Math.log(1 - nextUniform());
+    }
 
-		
+    /**
+     * Do test.
+     */
+    private static void doTest() {
+        int i;
+        MoreRandom alea = new MoreRandom();
 
-		
+        System.out.println("*** TEST CLASSE moreRandom ***");
+
+        // Teste les gï¿½nï¿½rateurs
+        System.out.print("Loi uniforme [0;1]: ");
+        System.out.println();
+        for (i = 0; i < 10; i++)
+            System.out.print(" " + alea.nextUniform());
+        System.out.println();
+
+        System.out.print("Loi uniforme [-10;10]: ");
+        System.out.println();
+        for (i = 0; i < 10; i++)
+            System.out.print(" " + alea.nextUniform(-10.0, 10.0));
+        System.out.println();
+
+        System.out.print("Aprï¿½s changement de germe: ");
+        alea.setSeed(1234L);
+        System.out.println("(germe:" + alea.getSeed() + ")");
+        for (i = 0; i < 10; i++)
+            System.out.print(" " + alea.nextUniform());
+        System.out.println();
+
+        System.out.print("Aprï¿½s randomize: ");
+        alea.randomize();
+        System.out.println("(germe:" + alea.getSeed() + ")");
+        for (i = 0; i < 10; i++)
+            System.out.print(" " + alea.nextUniform());
+        System.out.println();
+
+        System.out.print("Aprï¿½s randomize (bis): ");
+        alea.randomize();
+        System.out.println("(germe:" + alea.getSeed() + ")");
+        for (i = 0; i < 10; i++)
+            System.out.print(" " + alea.nextUniform());
+        System.out.println();
+
+        System.out.print("Aprï¿½s reprise du germe: ");
+        alea.setSeed(1234L);
+        System.out.println("(germe:" + alea.getSeed() + ")");
+        for (i = 0; i < 10; i++)
+            System.out.print(" " + alea.nextUniform());
+        System.out.println();
+
+        System.out.print("Loi triangulaire(0,5,10): ");
+        System.out.println();
+        for (i = 0; i < 10; i++)
+            System.out.print(" " + alea.nextTriangle(0, 5, 10));
+        System.out.println();
+
+        System.out.print("Loi exponentielle(1.0/10.0): ");
+        System.out.println();
+        for (i = 0; i < 10; i++)
+            System.out.print(" " + alea.nextExp(1.0 / 10.0));
+        System.out.println();
+
+    }
+
+    /**
+     * The main method.
+     *
+     * @param args the arguments
+     */
+    public static void main(String[] args) {
+        doTest();
+    }
+
+    public int nextInt(int origin, int bound) {
+        return nextInt(bound) + origin;
+    }
+
+
 }  // Class MoreRandom
 
 

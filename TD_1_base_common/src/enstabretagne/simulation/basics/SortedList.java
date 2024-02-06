@@ -1,8 +1,9 @@
 /**
-* Classe SortedList.java
-*@author Olivier VERRON
-*@version 1.0.
-*/
+ * Classe SortedList.java
+ *
+ * @author Olivier VERRON
+ * @version 1.0.
+ */
 package enstabretagne.simulation.basics;
 
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 
 // TODO: Auto-generated Javadoc
+
 /**
  * The Class SortedList.
  *
@@ -18,78 +20,76 @@ import java.util.List;
  */
 public class SortedList<T extends Comparable<T>> implements Iterable<T> {
 
-	/** The l. */
-	List<T> l;
-	
-	/**
-	 * Instantiates a new sorted list.
-	 */
-	public SortedList()
-	{
-		l = new ArrayList<T>();
-	}
-	
-	/**
-	 * Size.
-	 *
-	 * @return the int
-	 */
-	public int size() {
-		return l.size();
-	}
-	
-	/**
-	 * Clear.
-	 */
-	public void clear() {
-		l.clear();
-	}
-	
-	/**
-	 * Adds the.
-	 *
-	 * @param element the element
-	 */
-	public void add(T element) {
-		l.add(element);
-		Collections.sort(l);
-	}
-	
-	/**
-	 * Removes the.
-	 *
-	 * @param element the element
-	 */
-	public void remove(T element)
-	{
-		l.remove(element);
-	}
+    /** The l. */
+    List<T> l;
 
-	/* (non-Javadoc)
-	 * @see java.lang.Iterable#iterator()
-	 */
-	@Override
-	public Iterator<T> iterator() {
-		return l.iterator();
-	}
-	
-	/**
-	 * First.
-	 *
-	 * @return the t
-	 */
-	public T first(){
-		return l.get(0);
-	}
+    /**
+     * Instantiates a new sorted list.
+     */
+    public SortedList() {
+        l = new ArrayList<T>();
+    }
 
-	/**
-	 * Contains.
-	 *
-	 * @param ev the ev
-	 * @return true, if successful
-	 */
-	public boolean contains(T ev) {
-		return l.contains(ev);
-	}
+    /**
+     * Size.
+     *
+     * @return the int
+     */
+    public int size() {
+        return l.size();
+    }
+
+    /**
+     * Clear.
+     */
+    public void clear() {
+        l.clear();
+    }
+
+    /**
+     * Adds the.
+     *
+     * @param element the element
+     */
+    public void add(T element) {
+        l.add(element);
+        Collections.sort(l);
+    }
+
+    /**
+     * Removes the.
+     *
+     * @param element the element
+     */
+    public void remove(T element) {
+        l.remove(element);
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Iterable#iterator()
+     */
+    @Override
+    public Iterator<T> iterator() {
+        return l.iterator();
+    }
+
+    /**
+     * First.
+     *
+     * @return the t
+     */
+    public T first() {
+        return l.get(0);
+    }
+
+    /**
+     * Contains.
+     *
+     * @param ev the ev
+     * @return true, if successful
+     */
+    public boolean contains(T ev) {
+        return l.contains(ev);
+    }
 }
 

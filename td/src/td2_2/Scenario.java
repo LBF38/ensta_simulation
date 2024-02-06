@@ -8,7 +8,6 @@ import enstabretagne.simulation.basics.ScenarioId;
 
 import java.util.List;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 public class Scenario extends SimEntity {
     private final double seed;
