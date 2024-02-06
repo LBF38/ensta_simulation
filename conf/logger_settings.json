@@ -31,7 +31,8 @@
         "Warning",
         "Error",
         "Fatal",
-        "Data"
+        "Data",
+        "DataSimple"
       ]
     },
     {

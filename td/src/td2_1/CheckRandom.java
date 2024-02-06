@@ -9,10 +9,14 @@ public class CheckRandom {
         Logger.load();
         MoreRandom random = new MoreRandom();
         random.setSeed(123456789);
-        CategoriesGenerator categories = new CategoriesGenerator(-10, 10, 10, 0, 1000);
+        CategoriesGenerator categories = new CategoriesGenerator(-10, 10, 10, 1, 1);
+        Logger.DataSimple("Gaussian", "Segment", "Value");
         for (int i = 0; i < 1000; i++) {
-            Logger.Data(random.nextGaussian(0, 1));
-            // TODO: make it work !
+            double value = random.nextGaussian();
+            var cat = categories.getSegmentOf(value);
+            if (cat == null)
+                System.out.println("null");
+            Logger.DataSimple("Gaussian", cat, value);
         }
         Logger.Terminate();
     }
