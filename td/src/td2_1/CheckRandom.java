@@ -11,7 +11,7 @@ public class CheckRandom {
         random.setSeed(123456789);
         CategoriesGenerator categories = new CategoriesGenerator(-10, 10, 10, 0, 1000);
         for (int i = 0; i < 1000; i++) {
-            Logger.Data(random.nextGaussian());
+            Logger.Data(random.nextGaussian(0, 1));
             // TODO: make it work !
         }
         Logger.Terminate();
