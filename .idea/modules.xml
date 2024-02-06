@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../td_simulation/TD_1_base_common/TD_1_base_common.iml" filepath="$PROJECT_DIR$/../td_simulation/TD_1_base_common/TD_1_base_common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TD_1_base_common/TD_1_base_common.iml" filepath="$PROJECT_DIR$/TD_1_base_common/TD_1_base_common.iml" />
       <module fileurl="file://$PROJECT_DIR$/ensta_simulation.iml" filepath="$PROJECT_DIR$/ensta_simulation.iml" />
       <module fileurl="file://$PROJECT_DIR$/td/td.iml" filepath="$PROJECT_DIR$/td/td.iml" />
     </modules>
