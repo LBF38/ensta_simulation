@@ -6,6 +6,8 @@ import enstabretagne.simulation.basics.ISimulationDateProvider;
 import enstabretagne.simulation.basics.SortedList;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
 
 public class SimEngine implements ISimulationDateProvider {
     private final LogicalDateTime start;
@@ -62,5 +64,9 @@ public class SimEngine implements ISimulationDateProvider {
     @Override
     public LogicalDateTime SimulationDate() {
         return current;
+    }
+
+    public List<SimEntity> search(Predicate<SimEntity> predicate) {
+        return simulatedEntities.stream().filter(predicate).toList();
     }
 }

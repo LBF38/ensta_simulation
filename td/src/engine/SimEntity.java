@@ -2,13 +2,16 @@ package engine;
 
 import enstabretagne.base.time.LogicalDateTime;
 
+import java.util.List;
+import java.util.function.Predicate;
+
 /**
  * Entité simulée.
  * A des propriétés et doit être initialisée.
  */
 public abstract class SimEntity {
-    private final InitData initData;
-    private SimEngine engine;
+    protected final InitData initData;
+    protected final SimEngine engine;
 
     public SimEntity(SimEngine engine, InitData initData) {
         this.engine = engine;
@@ -35,4 +38,8 @@ public abstract class SimEntity {
     }
 
     public abstract void init();
+
+    public List<SimEntity> search(Predicate<SimEntity> predicate) {
+        return this.engine.search(predicate);
+    }
 }
