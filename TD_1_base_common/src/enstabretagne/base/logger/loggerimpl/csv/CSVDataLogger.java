@@ -6,11 +6,17 @@ package enstabretagne.base.logger.loggerimpl.csv;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.temporal.Temporal;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
 import enstabretagne.base.Settings;
 import enstabretagne.base.logger.IRecordable;
 import enstabretagne.base.logger.LogLevels;
+import enstabretagne.base.logger.Logger;
 import enstabretagne.base.logger.LoggerConf;
 import enstabretagne.base.logger.LoggerParamsNames;
 import enstabretagne.base.logger.loggerimpl.AbstractLogger;
@@ -39,14 +45,14 @@ public class CSVDataLogger extends AbstractLogger {
 
 	/** The start record time. */
 	LogicalDateTime startRecordTime;
-
+	
+	
 	/* (non-Javadoc)
 	 * @see enstabretagne.base.logger.ILogger#open(enstabretagne.base.logger.loggerimpl.LoggerConf)
 	 */
 	@Override
 	public boolean open(LoggerConf conf) {
 		boolean success = true;
-
 		if (conf.parametres.containsKey(LoggerParamsNames.RecordStartTime.toString())) {
 			startRecordTime = LogicalDateTime
 					.LogicalDateFrom(conf.parametres.get(LoggerParamsNames.RecordStartTime.toString()));
@@ -59,8 +65,17 @@ public class CSVDataLogger extends AbstractLogger {
 		String fileName;
 		if (conf.parametres.containsKey(LoggerParamsNames.DirectoryName.toString())) {
 			dirName = conf.parametres.get(LoggerParamsNames.DirectoryName.toString()).toString();
-			if (dirName.startsWith("."))
-				dirName = System.getProperty("user.dir") + File.separator + dirName;
+			if(dirName.startsWith("~")) {
+				dirName = System.getProperty("user.home").concat(File.separator).concat(dirName.substring(1));
+			}
+			Path myPath = Logger.convRightPath(dirName);
+			if(myPath.isAbsolute())
+				dirName = myPath.normalize().toString();			
+			else {
+				Path userDir = Logger.convRightPath(System.getProperty("user.dir"));
+				dirName = Paths.get(userDir.toString()+File.separator+myPath.toString()).normalize().toString();
+			}
+			
 		} else
 			dirName = System.getProperty("user.dir");
 		if (conf.parametres.containsKey(LoggerParamsNames.FileName.toString())) {
@@ -73,15 +88,17 @@ public class CSVDataLogger extends AbstractLogger {
 		directory = new File(dirName);
 		directory.mkdirs();
 		try {
-			defaultWriter = new FileWriter(new File(dirName + "\\" + fileName));
+			String fullFileName = dirName + File.separator + fileName;
+			logSummary.add(this.getClass().getSimpleName() + ">>" + fullFileName);
+			defaultWriter = new FileWriter(new File(fullFileName));
 			String header="Scenario"+sep+"Replique"+sep+"Temps Reel"+sep+"Temps Logique"+sep+"Niveau de Log"+sep+"Nom Objet"+sep+"Fonction"+sep+"Message"+"\n";
 			defaultWriter.write(header);
 
 		} catch (IOException e) {
 			success = false;
-			System.err.println("Logger " + this.getClass().getCanonicalName() + " n'a pu être créé.)");
+			System.err.println("Logger " + this.getClass().getCanonicalName() + " n'a pu ï¿½tre crï¿½ï¿½.)");
 			System.err.println(dirName + "\\" + fileName
-					+ " est sans doute ouvert ou n'existe pas (chemin non existant au préalable par exemple)");
+					+ " est sans doute ouvert ou n'existe pas (chemin non existant au prï¿½alable par exemple)");
 		}
 		return success;
 	}
@@ -136,7 +153,10 @@ public class CSVDataLogger extends AbstractLogger {
 					fw = listeFichier.get(objAbilities.getObjectType().getName());
 				else {
 					try {
-						fw = new FileWriter(directory.getPath() + "\\" +System.currentTimeMillis()+ objAbilities.getClassement() + ".csv");
+						String fullFileName = directory.getPath() + File.separator +System.currentTimeMillis()+ objAbilities.getClassement() + ".csv";
+						logSummary.add(this.getClass().getSimpleName() + ">>" + fullFileName);
+
+						fw = new FileWriter(fullFileName);
 						listeFichier.put(objAbilities.getObjectType().getName(), fw);
 						String header="Scenario"+sep+"Replique"+sep+"Temps Reel"+sep+"Temps Logique"+sep+"Nom Objet";
 						for(int i=0;i<objAbilities.getTitles().length;i++)
@@ -171,7 +191,11 @@ public class CSVDataLogger extends AbstractLogger {
 					fw = listeFichier.get(objAbilities.getClassement());
 				else {
 					try {
-						fw = new FileWriter(directory.getPath() + "\\" +System.currentTimeMillis()+ objAbilities.getClassement() + ".csv");
+						String fullFileName = directory.getPath() + File.separator +System.currentTimeMillis()+ objAbilities.getClassement() + ".csv";
+						logSummary.add(this.getClass().getSimpleName() + ">>" + fullFileName);
+
+						fw = new FileWriter(fullFileName);
+
 						listeFichier.put(objAbilities.getClassement(), fw);
 						String header="Scenario"+sep+"Replique"+sep+"Temps Reel"+sep+"Temps Logique"+sep+"Nom Objet";
 						for(int i=0;i<objAbilities.getTitles().length;i++)
@@ -209,7 +233,10 @@ public class CSVDataLogger extends AbstractLogger {
 	@Override
 	public void close() {
 		try {
+			logSummary.clear();
+
 			defaultWriter.close();
+			
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -240,5 +267,6 @@ public class CSVDataLogger extends AbstractLogger {
 			e.printStackTrace();
 		}
 	}
+
 
 }

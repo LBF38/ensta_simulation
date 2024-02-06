@@ -3,6 +3,9 @@
  */
 package enstabretagne.base.logger.loggerimpl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import enstabretagne.base.logger.ILogger;
 import enstabretagne.base.logger.LoggerConf;
 
@@ -21,5 +24,13 @@ public abstract class AbstractLogger implements ILogger {
 		return conf.checkLoggerConf();
 	}
 
+	public AbstractLogger() {
+		logSummary = new ArrayList<String>();
+	}
+	protected List<String> logSummary;
+	@Override
+	public List<String> getlogSummary() {
+		return logSummary;
+	}
 
 }

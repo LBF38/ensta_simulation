@@ -5,8 +5,11 @@
 */
 package enstabretagne.base.logger;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
@@ -29,10 +32,10 @@ import enstabretagne.simulation.basics.ISimulationDateProvider;
  * The Class Logger.
  */
 /*
- * La classe Logger permet d'enregistrer les journaux et les données produites au cours de la simulation.
- * Les méthodes publique Detail, Error, Fatal, Information ajoutent d'elle même un timestamp lié au temps réel
- * Il délivre plusieurs services:
- * -
+ * La classe Logger permet d'enregistrer les journaux et les donnï¿½es produites
+ * au cours de la simulation. Les mï¿½thodes publique Detail, Error, Fatal,
+ * Information ajoutent d'elle mï¿½me un timestamp liï¿½ au temps rï¿½el Il dï¿½livre
+ * plusieurs services: -
  */
 public class Logger {
 
@@ -42,12 +45,25 @@ public class Logger {
 	static {
 		log = new Logger();
 		log.Init();
-		
+
 	}
-	public static void load() {}
 	
+	public static Path convRightPath(String myPath) {
+		boolean isLinux = (File.separatorChar == '/');
+		if(isLinux) myPath = myPath.replace("\\", "/");
+		else myPath = myPath.replace("/", "\\");
+		
+		return Paths.get(myPath).normalize();
+	}
+
+	// permet de charger la classe
+	public static void load() {
+	}
+
 	/** The simulation date provider. */
 	private ISimulationDateProvider simulationDateProvider;
+
+	private IScenarioIdProvider scenarioIDProvider;
 
 	// --------------------------- Journaling
 	// -----------------------------------
@@ -57,12 +73,13 @@ public class Logger {
 	/** The loggers. */
 	/// </summary>
 	private List<ILogger> loggers;
+	
 
 	/**
 	 * Data simple.
 	 *
 	 * @param classement the classement
-	 * @param obj the obj
+	 * @param obj        the obj
 	 */
 	public static void DataSimple(String classement, Object... obj) {
 		if (obj != null) {
@@ -88,10 +105,10 @@ public class Logger {
 	/**
 	 * Fatal.
 	 *
-	 * @param obj the obj
+	 * @param obj      the obj
 	 * @param function the function
-	 * @param message the message
-	 * @param args the args
+	 * @param message  the message
+	 * @param args     the args
 	 */
 	public static void Fatal(Object obj, String function, String message, Object... args) {
 		log.log(LogLevels.fatal, obj, function, message, args);
@@ -102,10 +119,10 @@ public class Logger {
 	/**
 	 * Error.
 	 *
-	 * @param obj the obj
+	 * @param obj      the obj
 	 * @param function the function
-	 * @param message the message
-	 * @param args the args
+	 * @param message  the message
+	 * @param args     the args
 	 */
 	public static void Error(Object obj, String function, String message, Object... args) {
 		log.log(LogLevels.error, obj, function, message, args);
@@ -114,10 +131,10 @@ public class Logger {
 	/**
 	 * Detail.
 	 *
-	 * @param obj the obj
+	 * @param obj      the obj
 	 * @param function the function
-	 * @param message the message
-	 * @param args the args
+	 * @param message  the message
+	 * @param args     the args
 	 */
 	public static void Detail(Object obj, String function, String message, Object... args) {
 		log.log(LogLevels.detail, obj, function, message, args);
@@ -126,10 +143,10 @@ public class Logger {
 	/**
 	 * Information.
 	 *
-	 * @param obj the obj
+	 * @param obj      the obj
 	 * @param function the function
-	 * @param message the message
-	 * @param args the args
+	 * @param message  the message
+	 * @param args     the args
 	 */
 	public static void Information(Object obj, String function, String message, Object... args) {
 		log.log(LogLevels.information, obj, function, message, args);
@@ -138,10 +155,10 @@ public class Logger {
 	/**
 	 * Warning.
 	 *
-	 * @param obj the obj
+	 * @param obj      the obj
 	 * @param function the function
-	 * @param message the message
-	 * @param args the args
+	 * @param message  the message
+	 * @param args     the args
 	 */
 	public static void Warning(Object obj, String function, String message, Object... args) {
 		log.log(LogLevels.warning, obj, function, message, args);
@@ -150,56 +167,61 @@ public class Logger {
 	/**
 	 * Log.
 	 *
-	 * @param level the level
-	 * @param obj the obj
+	 * @param level    the level
+	 * @param obj      the obj
 	 * @param function the function
-	 * @param message the message
-	 * @param args the args
+	 * @param message  the message
+	 * @param args     the args
 	 */
 	private void log(LogLevels level, Object obj, String function, String message, Object... args) {
 		if (simulationDateProvider != null) {
-			if (simulationDateProvider instanceof IScenarioIdProvider && ((IScenarioIdProvider) simulationDateProvider).getScenarioId()!=null)
-				log(((IScenarioIdProvider) simulationDateProvider).getScenarioId(), Instant.now(),
-						simulationDateProvider.SimulationDate(), level, obj, function, message, args);
+			if (scenarioIDProvider != null && scenarioIDProvider.getScenarioId() != null)
+				log(scenarioIDProvider.getScenarioId(), Instant.now(), simulationDateProvider.SimulationDate(), level,
+						obj, function, message, args);
 			else
-				log(ScenarioId.ScenarioID_NULL, Instant.now(), simulationDateProvider.SimulationDate(), level, obj, function, message, args);
+				log(ScenarioId.ScenarioID_NULL, Instant.now(), simulationDateProvider.SimulationDate(), level, obj,
+						function, message, args);
 		} else
 			log(ScenarioId.ScenarioID_NULL, Instant.now(), LogicalDateTime.Zero, level, obj, function, message, args);
 
 	}
-	
+
 	/** The first title data simple. */
 	HashMap<String, String[]> firstTitleDataSimple = null;
 
-	boolean mustBeFiltered(boolean isActive, Object obj,StackTraceElement el, LogLevels level, List<String> levelsToRecord,List<String> classesToFilter) {
-		
-		if(isActive==false)
+	boolean mustBeFiltered(boolean isActive, Object obj, StackTraceElement el, LogLevels level,
+			List<String> levelsToRecord, List<String> classesToFilter) {
+
+		if (isActive == false)
 			return true;
-		
-		String s1="";
-		if(obj!=null) s1 = obj.getClass().getName();
+
+		String s1 = "";
+		if (obj != null)
+			s1 = obj.getClass().getName();
 		String s2 = "";
-		if(el!=null) s2= el.getClassName();
-		
+		if (el != null)
+			s2 = el.getClassName();
+
 		boolean hasTBeFiltered = false;
 		for (String s : classesToFilter)
 			hasTBeFiltered = hasTBeFiltered | s1.compareToIgnoreCase(s) == 0 | s2.compareToIgnoreCase(s) == 0;
 
-		if(!levelsToRecord.contains(level.s))
-			hasTBeFiltered=true;
+		if (!levelsToRecord.contains(level.s))
+			hasTBeFiltered = true;
 		return hasTBeFiltered;
 	}
+
 	/**
 	 * Log.
 	 *
 	 * @param scenarioId the scenario id
-	 * @param t the t
-	 * @param d the d
-	 * @param level the level
-	 * @param obj the obj
-	 * @param function the function
-	 * @param message the message
-	 * @param args the args
+	 * @param t          the t
+	 * @param d          the d
+	 * @param level      the level
+	 * @param obj        the obj
+	 * @param function   the function
+	 * @param message    the message
+	 * @param args       the args
 	 */
 	protected void log(ScenarioId scenarioId, Temporal t, LogicalDateTime d, LogLevels level, Object obj,
 			String function, String message, Object... args) {
@@ -207,9 +229,9 @@ public class Logger {
 		StackTraceElement el = Thread.currentThread().getStackTrace()[4];
 
 		if (obj != null && Settings.filterEngineLogs()) {
-			
 
-			boolean hasTBeFiltered = mustBeFiltered(true,obj,el,level,LoggerSettings.settings.levelsToRecord,LoggerSettings.settings.classToFilter);
+			boolean hasTBeFiltered = mustBeFiltered(true, obj, el, level, LoggerSettings.settings.levelsToRecord,
+					LoggerSettings.settings.classToFilter);
 //			boolean hasTBeFiltered = false;
 //			for (String s : LoggerSettings.settings.classToFilter)
 //				hasTBeFiltered = hasTBeFiltered | s1.compareToIgnoreCase(s) == 0 | s2.compareToIgnoreCase(s) == 0;
@@ -223,21 +245,21 @@ public class Logger {
 					toBeLogged = false;
 		}
 
-
 		if (toBeLogged) {
 
 			if (level.equals(LogLevels.data)) {
 				ObjectAnalyseForLog objAbilities = analyseObject(obj);
-				for(int i=0;i<loggers.size();i++) {
-					boolean hasTBeFiltered = mustBeFiltered(loggerConfs.get(i).activate,obj,el,level,loggerConfs.get(i).levelsToRecord,loggerConfs.get(i).classToFilter);
+				for (int i = 0; i < loggers.size(); i++) {
+					boolean hasTBeFiltered = mustBeFiltered(loggerConfs.get(i).activate, obj, el, level,
+							loggerConfs.get(i).levelsToRecord, loggerConfs.get(i).classToFilter);
 
-					if(!hasTBeFiltered)
+					if (!hasTBeFiltered)
 						loggers.get(i).log(el, scenarioId, t, d, level, objAbilities, function, message, args);
 				}
 			} else if (level.equals(LogLevels.dataSimple)) {
 				if (!firstTitleDataSimple.containsKey(obj.toString()))
-					firstTitleDataSimple.put(obj.toString(), Arrays.asList(args).stream().map(tit -> tit.toString()).collect(Collectors.toList())
-							.toArray(new String[0]));
+					firstTitleDataSimple.put(obj.toString(), Arrays.asList(args).stream().map(tit -> tit.toString())
+							.collect(Collectors.toList()).toArray(new String[0]));
 				else {
 					String[] tit = firstTitleDataSimple.get(obj.toString());
 					IRecordable data = new IRecordable() {
@@ -249,8 +271,8 @@ public class Logger {
 
 						@Override
 						public String[] getRecords() {
-							return Arrays.asList(args).stream().map(field -> field.toString()).collect(Collectors.toList())
-									.toArray(new String[0]);
+							return Arrays.asList(args).stream().map(field -> field.toString())
+									.collect(Collectors.toList()).toArray(new String[0]);
 						}
 
 						@Override
@@ -258,28 +280,29 @@ public class Logger {
 							return obj.toString();
 						}
 					};
-					for(int i=0;i<loggers.size();i++) {
-						boolean hasTBeFiltered = mustBeFiltered(loggerConfs.get(i).activate,obj,el,level,loggerConfs.get(i).levelsToRecord,loggerConfs.get(i).classToFilter);
+					for (int i = 0; i < loggers.size(); i++) {
+						boolean hasTBeFiltered = mustBeFiltered(loggerConfs.get(i).activate, obj, el, level,
+								loggerConfs.get(i).levelsToRecord, loggerConfs.get(i).classToFilter);
 
-						if(!hasTBeFiltered)
+						if (!hasTBeFiltered)
 							loggers.get(i).log(el, scenarioId, t, d, level, data, function, message, new Object[0]);
 					}
 
-					
 				}
-			} else if(level.equals(LogLevels.dataRecordable)){
-				for(int i=0;i<loggers.size();i++) {
-					boolean hasTBeFiltered = mustBeFiltered(loggerConfs.get(i).activate,obj,el,level,loggerConfs.get(i).levelsToRecord,loggerConfs.get(i).classToFilter);
+			} else if (level.equals(LogLevels.dataRecordable)) {
+				for (int i = 0; i < loggers.size(); i++) {
+					boolean hasTBeFiltered = mustBeFiltered(loggerConfs.get(i).activate, obj, el, level,
+							loggerConfs.get(i).levelsToRecord, loggerConfs.get(i).classToFilter);
 
-					if(!hasTBeFiltered)
+					if (!hasTBeFiltered)
 						loggers.get(i).log(el, scenarioId, t, d, level, obj, function, message, new Object[0]);
 				}
-			}
-			else {
-				for(int i=0;i<loggers.size();i++) {
-					boolean hasTBeFiltered = mustBeFiltered(loggerConfs.get(i).activate,obj,el,level,loggerConfs.get(i).levelsToRecord,loggerConfs.get(i).classToFilter);
+			} else {
+				for (int i = 0; i < loggers.size(); i++) {
+					boolean hasTBeFiltered = mustBeFiltered(loggerConfs.get(i).activate, obj, el, level,
+							loggerConfs.get(i).levelsToRecord, loggerConfs.get(i).classToFilter);
 
-					if(!hasTBeFiltered)
+					if (!hasTBeFiltered)
 						loggers.get(i).log(el, scenarioId, t, d, level, obj, function, message, args);
 				}
 
@@ -317,8 +340,8 @@ public class Logger {
 						}
 						if (mL.containsKey(ma.name())) {
 							System.err.println(MessagesLogger.LoggerDataReuseOfAToRecordName + " : '" + ma.name()
-									+ "' trouvé sur la méthode '" + m.getName() + "'"
-									+ " déjà présente sur la méthode '" + mL.get(ma.name()) + "'" + " dans la classe '"
+									+ "' trouvï¿½ sur la mï¿½thode '" + m.getName() + "'"
+									+ " dï¿½jï¿½ prï¿½sente sur la mï¿½thode '" + mL.get(ma.name()) + "'" + " dans la classe '"
 									+ o.getClass().getName() + "'");
 							System.exit(1);
 						}
@@ -365,6 +388,7 @@ public class Logger {
 		dataLogAbilities = new HashMap<Class<?>, TypeAnalyseForLog>();
 		firstTitleDataSimple = new HashMap<String, String[]>();
 		loggerConfs = new ArrayList<>();
+		
 	}
 
 	/**
@@ -376,7 +400,9 @@ public class Logger {
 		return log.simulationDateProvider != null & log.loggers.size() > 0;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#finalize()
 	 */
 	@Override
@@ -401,7 +427,7 @@ public class Logger {
 	 * Inits the.
 	 */
 	public void Init() {
-		terminated=false;
+		terminated = false;
 		log.clearLoggers();
 		if (log.simulationDateProvider == null)
 			log.simulationDateProvider = new ISimulationDateProvider() {
@@ -417,45 +443,46 @@ public class Logger {
 		for (LoggerConf lc : LoggerSettings.settings.loggerConfs) {
 			i++;
 			if (lc.checkLoggerConf().equals("")) {
+				if (lc.activate) {
+					String s = lc.parametres.get(LoggerParamsNames.LoggerKind.toString());
+					try {
 
-				String s = lc.parametres.get(LoggerParamsNames.LoggerKind.toString());
-				try {
+						Class<?> c = Class.forName(s);
+						if (ILogger.class.isAssignableFrom(c)) {
+							try {
+								ILogger logger = (ILogger) c.getDeclaredConstructor().newInstance();
+								boolean success = logger.open(lc);
+								if (success) {
+									log.addLogger(logger);
+									log.addConf(lc);
+								}
 
-					Class<?> c = Class.forName(s);
-					if (ILogger.class.isAssignableFrom(c)) {
-						try {
-							ILogger logger = (ILogger) c.getDeclaredConstructor().newInstance();
-							boolean success = logger.open(lc);
-							if (success) {
-								log.addLogger(logger);
-								log.addConf(lc);
+								if (LoggerSettings.settings.ClearAllBefore)
+									logger.clear(lc);
+							} catch (InstantiationException | IllegalAccessException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							} catch (IllegalArgumentException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (InvocationTargetException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (NoSuchMethodException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (SecurityException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
 							}
-								
-							if (LoggerSettings.settings.ClearAllBefore)
-								logger.clear(lc);
-						} catch (InstantiationException | IllegalAccessException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						} catch (IllegalArgumentException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (InvocationTargetException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (NoSuchMethodException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (SecurityException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
 						}
+					} catch (ClassNotFoundException e1) {
+						System.err.println("Attention la classe de logger '" + e1.getMessage()
+								+ "' n'a pas ï¿½tï¿½ trouvï¿½e. Logger non pris en charge ");
 					}
-				} catch (ClassNotFoundException e1) {
-					System.err.println("Attention la classe de logger '" + e1.getMessage()
-							+ "' n'a pas été trouvée. Logger non pris en charge ");
 				}
 			} else {
-				System.err.println("LoggerConfs N°" + i + " : " + lc.checkLoggerConf());
+				System.err.println("LoggerConfs Nï¿½" + i + " : " + lc.checkLoggerConf());
 				System.exit(1);
 			}
 		}
@@ -463,6 +490,7 @@ public class Logger {
 	}
 
 	List<LoggerConf> loggerConfs;
+
 	private void addConf(LoggerConf lc) {
 		loggerConfs.add(lc);
 	}
@@ -477,10 +505,14 @@ public class Logger {
 
 	}
 
+	public static void setScenarioIdProvider(IScenarioIdProvider idProv) {
+		log.scenarioIDProvider = idProv;
+	}
+
 	public static void SaveAndContinue() {
 		log.save();
 	}
-	
+
 	public void save() {
 		loggers.forEach((log) -> log.save());
 	}
@@ -490,9 +522,31 @@ public class Logger {
 		log = new Logger();
 		log.Init();
 	}
-	public void close() {
-		loggers.forEach((log) -> log.close());
+
+	private void displayResume() {
+		System.out.println();
+		System.out.println("======");
+
+		System.out.println("Journal des loggers");
+		System.out.println();
+		
+		for(var log : loggers)
+		{
+			System.out.println(log.getClass().getSimpleName());
+			for(var s : log.getlogSummary()) {
+				System.out.println(">> " + s);
+			}
+			System.out.println("-----");
+			System.out.println("");
+		}
 	}
+	public void close() {
+		displayResume();
+			
+		loggers.forEach((log) -> log.close());
+		
+	}
+
 	/**
 	 * Terminate.
 	 */
@@ -500,6 +554,7 @@ public class Logger {
 		try {
 			log.close();
 			log.finalize();
+
 
 		} catch (Throwable e) {
 			// TODO Auto-generated catch block

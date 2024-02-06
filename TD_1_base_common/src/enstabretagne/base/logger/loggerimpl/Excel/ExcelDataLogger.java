@@ -11,6 +11,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.Temporal;
@@ -23,6 +25,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
 import enstabretagne.base.logger.IRecordable;
 import enstabretagne.base.logger.LogLevels;
+import enstabretagne.base.logger.Logger;
 import enstabretagne.base.logger.LoggerConf;
 import enstabretagne.base.logger.LoggerParamsNames;
 import enstabretagne.base.logger.loggerimpl.AbstractLogger;
@@ -232,11 +235,23 @@ public class ExcelDataLogger extends AbstractLogger {
 		boolean success = true;
 		String dirName;
 		String fileName;
+		
 
+		 
 		if (conf.parametres.containsKey(LoggerParamsNames.DirectoryName.toString())) {
 			dirName = conf.parametres.get(LoggerParamsNames.DirectoryName.toString()).toString();
-			if (dirName.startsWith("."))
-				dirName = System.getProperty("user.dir") + File.separator + dirName;
+			if(dirName.startsWith("~")) {
+				dirName = System.getProperty("user.home").concat(File.separator).concat(dirName.substring(1));
+			}
+			Path myPath = Logger.convRightPath(dirName);
+			if(myPath.isAbsolute())
+				dirName = myPath.toString();			
+			else {
+				Path userDir = Logger.convRightPath(System.getProperty("user.dir"));
+				dirName = Paths.get(userDir.toString()+File.separator+myPath.toString()).normalize().toString();
+			}
+
+			
 		} else
 			dirName = System.getProperty("user.dir");
 		if (conf.parametres.containsKey(LoggerParamsNames.FileName.toString())) {
@@ -249,18 +264,24 @@ public class ExcelDataLogger extends AbstractLogger {
 		} else
 			fileName = "monfichier.xls";
 
-		File directory = new File(dirName);
-		directory.mkdirs();
-		try {
 
-			fileOut = new FileOutputStream(dirName + File.separator + fileName);
+		File directory = new File(dirName);
+		boolean res = directory.mkdirs();
+
+		try {
+			String fullFileName = dirName + File.separator + fileName;
+			logSummary.add(this.getClass().getSimpleName() + ">>"+ fullFileName);
+
+			fileOut = new FileOutputStream(fullFileName);
 
 		} catch (FileNotFoundException e) {
 			success = false;
-			System.err.println("Logger " + this.getClass().getCanonicalName() + " n'a pu être créé.)");
+			System.err.println("Logger " + this.getClass().getCanonicalName() + " n'a pu ï¿½tre crï¿½ï¿½.)");
 			System.err.println(dirName + "\\" + fileName
-					+ " est sans doute ouvert ou n'existe pas (chemin non existant au préalable par exemple)");
+					+ " est sans doute ouvert ou n'existe pas (chemin non existant au prï¿½alable par exemple)");
 		}
+		
+		if(!success) logSummary.add("Erreur dans la tentative de crÃ©ation de " + dirName);
 
 		return success;
 	}
@@ -339,8 +360,8 @@ public class ExcelDataLogger extends AbstractLogger {
 			if (nbS != 0) {
 				for (int i = 0; i < nbS; i++) {
 					Sheet s = wb.getSheetAt(i);
-					if (s.getRow(0) != null) {// ceci arrive si on vide la mémoire tampon pour les grands fichiers. Dans
-												// ce cas pas de possibilité de traiter la mise en page de gros fichiers
+					if (s.getRow(0) != null) {// ceci arrive si on vide la mï¿½moire tampon pour les grands fichiers. Dans
+												// ce cas pas de possibilitï¿½ de traiter la mise en page de gros fichiers
 	
 						Cell firstCell = s.getRow(0).getCell(0);
 						
@@ -350,8 +371,8 @@ public class ExcelDataLogger extends AbstractLogger {
 					}
 				}
 			}
-			else { //comme aucune feuille n'a été créée, si on enregistre ainsi le classeur, il sera corrompu.
-				//on crée donc une page vide.
+			else { //comme aucune feuille n'a ï¿½tï¿½ crï¿½ï¿½e, si on enregistre ainsi le classeur, il sera corrompu.
+				//on crï¿½e donc une page vide.
 				Sheet s = wb.createSheet("Vide");
 				s.createRow(1);
 			}
@@ -383,6 +404,7 @@ public class ExcelDataLogger extends AbstractLogger {
 					wb.write(fileOut);
 				wb.close();
 				isWbOpened = false;
+				logSummary.clear();
 				fileOut.flush();
 
 				fileOut.close();

@@ -6,6 +6,7 @@
 package enstabretagne.base.logger;
 
 import java.time.temporal.Temporal;
+import java.util.List;
 
 import enstabretagne.base.time.LogicalDateTime;
 import enstabretagne.simulation.basics.ScenarioId;
@@ -49,6 +50,7 @@ public interface ILogger {
 	
 	void save();
 	
+	List<String> getlogSummary();
 	/**
 	 * Close.
 	 */
