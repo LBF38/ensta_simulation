@@ -11,7 +11,7 @@ public class App {
         LogicalDateTime start = new LogicalDateTime("01/01/2024 14:00");
         LogicalDateTime end = new LogicalDateTime("01/01/2024 15:00");
 
-        SimplePlan plan = new SimplePlan(1, start, end);
+        SimplePlan plan = new SimplePlan(2, start, end);
 
         SimplePlanMonitor spm = new SimplePlanMonitor(plan);
         spm.run();

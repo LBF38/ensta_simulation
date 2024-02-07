@@ -3,7 +3,6 @@ package tatooine.Client;
 import enstabretagne.engine.InitData;
 import tatooine.Workshop.Workshop;
 
-
 import java.util.List;
 
 public class InitClient extends InitData {

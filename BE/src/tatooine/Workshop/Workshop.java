@@ -5,6 +5,6 @@ import enstabretagne.engine.SimuEngine;
 
 public class Workshop extends EntiteSimulee {
     public Workshop(SimuEngine engine, InitWorkshop ini) {
-        super(engine,ini);
+        super(engine, ini);
     }
 }
