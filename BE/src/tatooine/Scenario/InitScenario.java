@@ -1,16 +1,16 @@
 package tatooine.Scenario;
 
+import engine.ScenarioInitData;
 import enstabretagne.base.time.LogicalDateTime;
-import enstabretagne.engine.ScenarioInitData;
 
 public class InitScenario extends ScenarioInitData {
     public int nbClients;
+    int nbEtudiants;
+
     public InitScenario(String name, int seed, LogicalDateTime debut, LogicalDateTime fin, int nbClients) {
-        super(name, seed, debut, fin);
+        super(name, debut, fin, seed);
         this.nbClients = nbClients;
     }
-
-    int nbEtudiants;
 
     public int getEtudiants() {
         return nbEtudiants;

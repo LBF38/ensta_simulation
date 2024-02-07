@@ -1,16 +1,18 @@
 package tatooine;
 
+import engine.Plan;
+import engine.Scenario;
 import enstabretagne.base.time.LogicalDateTime;
-import enstabretagne.engine.Plan;
-import enstabretagne.engine.Scenario;
 import tatooine.Scenario.InitScenario;
 import tatooine.Scenario.SimpleScenario;
 
 import java.util.LinkedList;
+
 public class SimplePlan extends Plan {
 
     LogicalDateTime start;
     LogicalDateTime end;
+    LinkedList<Scenario> scenarios;
 
     public SimplePlan(int nbReplique, LogicalDateTime start, LogicalDateTime end) {
         super(nbReplique);
@@ -18,10 +20,10 @@ public class SimplePlan extends Plan {
         this.start = start;
         this.end = end;
     }
-    LinkedList<Scenario> scenarios;
+
     @Override
     public void initScenarii() {
-        for (int i = 0; i < getNbReplique(); i++)
+        for (int i = 0; i < getReplicas(); i++)
             scenarios.add(
                     new SimpleScenario(getEngine(), new InitScenario("Simple scenario", i, start, end, 2)));
     }
@@ -36,6 +38,7 @@ public class SimplePlan extends Plan {
         }
         return null;
     }
+
     @Override
     public boolean hasNextScenario() {
         return !scenarios.isEmpty();
