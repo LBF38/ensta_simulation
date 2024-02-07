@@ -73,3 +73,22 @@ Pour cela, il suffit d'utiliser la méthode `jsonb.fromJson(config, classToInsta
 > Il semblerait qu'il y ait quelques erreurs avec des types plus complexes de données.
 > Ainsi, à voir comment on fonctionne pour ces types de données, et si on les inclut dans le fichier de configuration
 > JSON ou non.
+
+## Distances entre zones
+
+Afin de faciliter la gestion des temps de marche entre zones, l'idée serait de créer une classe qui enregistre ces
+distances entre deux zones et construit ainsi la matrice de correspondance entre ces dernières.
+
+On peut imaginer une API du style:
+
+```java
+Calculator.setWalkingDuration(workshop1, workshop2, duration);
+```
+
+Et ensuite, il serait consommé par les clients avec une API comme:
+
+```java
+Calculator.goFrom(workshop1, workshop2);
+```
+
+Quelque chose comme ça. A voir avec les implémentations.
