@@ -68,3 +68,8 @@ remplacé par l'argument par défaut lors de l'initialisation.
 On peut également initialiser une liste d'objets/classes configuré à partir d'un json (bien formatté, naturellement).
 Pour cela, il suffit d'utiliser la méthode `jsonb.fromJson(config, classToInstanciate);`.
 (cf. codebase pour un exemple concret).
+
+> [!IMPORTANT]
+> Il semblerait qu'il y ait quelques erreurs avec des types plus complexes de données.
+> Ainsi, à voir comment on fonctionne pour ces types de données, et si on les inclut dans le fichier de configuration
+> JSON ou non.
