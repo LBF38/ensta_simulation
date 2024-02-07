@@ -2,25 +2,55 @@ package engine;
 
 
 import enstabretagne.base.logger.Logger;
+import enstabretagne.base.math.MoreRandom;
 import enstabretagne.base.time.LogicalDateTime;
+import enstabretagne.simulation.basics.IScenarioIdProvider;
 import enstabretagne.simulation.basics.ISimulationDateProvider;
+import enstabretagne.simulation.basics.ScenarioId;
 import enstabretagne.simulation.basics.SortedList;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class SimEngine implements ISimulationDateProvider {
-    private final LogicalDateTime start;
-    private final LogicalDateTime end;
-    private final SortedList<SimEvent> events = new SortedList<>();
-    protected ArrayList<SimEntity> simulatedEntities = new ArrayList<>();
+public class SimEngine implements ISimulationDateProvider, IScenarioIdProvider {
+    private final SortedList<SimEvent> scheduler = new SortedList<>();
+    protected List<SimEntity> simulatedEntities = new ArrayList<>();
+    Scenario currentScenario;
+    private LogicalDateTime start;
+    private LogicalDateTime end;
     private LogicalDateTime current;
+    private MoreRandom randomGenerator;
 
     public SimEngine(LogicalDateTime startDate, LogicalDateTime endDate) {
         this.start = startDate;
         this.current = this.start;
         this.end = endDate;
+        // Set logger
+        Logger.setDateProvider(this);
+        Logger.setScenarioIdProvider(this);
+    }
+
+    public MoreRandom getRandomGenerator() {
+        return randomGenerator;
+    }
+
+    protected LogicalDateTime getCurrentDate() {
+        return current;
+    }
+
+    public Scenario getCurrentScenario() {
+        return currentScenario;
+    }
+
+    /**
+     * Change le scénario en cours d'exécution.
+     *
+     * @param sc scénario à exécuter
+     */
+    public void setCurrentScenario(Scenario sc) {
+        currentScenario = sc;
+        randomGenerator = new MoreRandom(sc.getSeed());
     }
 
     public void addEntity(SimEntity simEntity) {
@@ -28,7 +58,7 @@ public class SimEngine implements ISimulationDateProvider {
     }
 
     protected void addEvent(SimEvent event) {
-        this.events.add(event);
+        this.scheduler.add(event);
     }
 
     public void init() {
@@ -41,9 +71,9 @@ public class SimEngine implements ISimulationDateProvider {
     public void simulate() {
         Logger.Information(this, "simulate", "current = " + this.current);
         while (hasNextEvent()) {
-            Logger.Information(this, "simulate", "events.size() = " + this.events.size());
-            SimEvent event = this.events.first();
-            this.events.remove(event);
+            Logger.Information(this, "simulate", "events.size() = " + this.scheduler.size());
+            SimEvent event = this.scheduler.first();
+            this.scheduler.remove(event);
             current = event.getOccurrenceDate();
             Logger.Information(this, "simulate", "event = " + event);
             event.process();
@@ -51,8 +81,31 @@ public class SimEngine implements ISimulationDateProvider {
         }
     }
 
+    public void clean() {
+        simulatedEntities.stream().filter(e -> !(e instanceof Scenario)).forEach(SimEntity::terminate);
+        scheduler.clear();
+        currentScenario = null;
+        start = null;
+        current = null;
+        end = null;
+
+        // Clear memory
+        System.gc();
+    }
+
+    public void terminate() {
+        scheduler.clear();
+        simulatedEntities.clear();
+        currentScenario = null;
+        start = null;
+        current = null;
+        end = null;
+
+        System.gc();
+    }
+
     private boolean hasNextEvent() {
-        for (SimEvent e : events) {
+        for (SimEvent e : scheduler) {
             if (e.getOccurrenceDate().compareTo(end) <= 0) {
                 Logger.Information(this, "hasNextEvent", "true");
                 return true;
@@ -69,5 +122,10 @@ public class SimEngine implements ISimulationDateProvider {
 
     public List<SimEntity> search(Predicate<SimEntity> query) {
         return simulatedEntities.stream().filter(query).toList();
+    }
+
+    @Override
+    public ScenarioId getScenarioId() {
+        return currentScenario.getID();
     }
 }

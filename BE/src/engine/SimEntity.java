@@ -10,13 +10,31 @@ import java.util.function.Predicate;
  * A des propriétés et doit être initialisée.
  */
 public abstract class SimEntity {
-    protected final InitData initData;
-    protected final SimEngine engine;
+    private final InitData initData;
+    private final SimEngine engine;
+    private EntityState state;
 
     public SimEntity(SimEngine engine, InitData initData) {
+        this.state = EntityState.NONE;
         this.engine = engine;
         this.initData = initData;
         this.engine.addEntity(this);
+    }
+
+    protected EntityState getState() {
+        return state;
+    }
+
+    public InitData getInitData() {
+        return initData;
+    }
+
+    public SimEngine getEngine() {
+        return engine;
+    }
+
+    public String getName() {
+        return initData.getName();
     }
 
     public InitData getInitData() {
@@ -37,7 +55,24 @@ public abstract class SimEntity {
         this.engine.addEvent(event);
     }
 
-    public abstract void init();
+    public void requestInit() {
+        if (state != EntityState.NONE) {
+            return;
+        }
+        init();
+    }
+
+    protected void init() {
+        state = EntityState.INITIALIZED;
+    }
+
+    /**
+     * Method for terminating the entity.
+     * Should be overridden to release resources.
+     */
+    protected void terminate() {
+        state = EntityState.DEAD;
+    }
 
     public List<SimEntity> search(Predicate<SimEntity> predicate) {
         return this.engine.search(predicate);
