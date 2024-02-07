@@ -1,0 +1,63 @@
+{
+  "Douches" : {
+    "capacity": 8,
+    "frequenting": "planned",
+    "open": "07:15:00",
+    "close": "14:00:00",
+    "duration": 10,
+    "efficiency": 10,
+    "queue": "unorganized",
+    "queue_capacity": 8
+  },
+  "Bains à jets": {
+    "capacity": 9,
+    "frequenting": "planned",
+    "open": "10:00:00",
+    "close" : "13:00:00",
+    "duration": 20,
+    "efficiency": 10,
+    "queue": "organized",
+    "queue_capacity": 15
+  },
+  "Soins du visage": {
+    "capacity": 8,
+    "frequenting": "planned",
+    "open": "07:15:00",
+    "close": "14:00:00",
+    "duration": 10,
+    "efficiency": 5,
+    "queue": "unorganized",
+    "queue_capacity": 5
+  },
+  "Terres chaudes": {
+    "capacity": 6,
+    "frequenting": "free",
+    "open": "07:15:00",
+    "close": "14:00:00",
+    "duration": 20,
+    "efficiency": 20,
+    "queue": "organized",
+    "queue_capacity": 10
+  },
+  "Etuves": {
+    "capacity": 6,
+    "frequenting": "free",
+    "open": "07:15:00",
+    "close": "14:00:00",
+    "duration": 15,
+    "efficiency": 15,
+    "queue": "organized",
+    "queue_capacity": 6
+  },
+  "Jets filiformes": {
+    "capacity": 4,
+    "frequenting": "free",
+    "open": "07:15:00",
+    "close": "14:00:00",
+    "duration": 5,
+    "efficiency": 30,
+    "queue": "unorganized",
+    "queue_capacity": 10
+  }
+
+}

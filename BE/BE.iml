@@ -8,5 +8,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="TD_1_base_common" />
+    <orderEntry type="module" module-name="TD_2.2_solution_xpplan" />
   </component>
 </module>

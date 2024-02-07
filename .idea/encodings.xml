@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/BE/config/institute.json" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/BE/config/workshops.json" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/BE/src/tatooine" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/td_correction/TD_2.2_solution_xpplan/src/enstabretagne/helloworld/ENSTA_enhanced.java" charset="UTF-8" />
   </component>
 </project>
