@@ -22,10 +22,7 @@ public class SimEngine implements ISimulationDateProvider, IScenarioIdProvider {
     private LogicalDateTime current;
     private MoreRandom randomGenerator;
 
-    public SimEngine(LogicalDateTime startDate, LogicalDateTime endDate) {
-        this.start = startDate;
-        this.current = this.start;
-        this.end = endDate;
+    public SimEngine() {
         // Set logger
         Logger.setDateProvider(this);
         Logger.setScenarioIdProvider(this);
@@ -61,11 +58,32 @@ public class SimEngine implements ISimulationDateProvider, IScenarioIdProvider {
         this.scheduler.add(event);
     }
 
+    /**
+     * Initialize the simulation engine with the current scenario's start and end date.
+     * It requests the initialization of the scenario.
+     * The scenario takes care of initializing all the simulated entities.
+     */
     public void init() {
-        for (SimEntity e : simulatedEntities) {
-            Logger.Detail(this, "init", "entity init = " + e);
-            e.init();
+        if (currentScenario != null) {
+            this.start = currentScenario.getStart();
+            this.end = currentScenario.getEnd();
+            this.current = start;
+            currentScenario.requestInit();
         }
+    }
+
+    /**
+     * Initialize the simulation engine with the start and end date.
+     * It also initializes all the simulated entities.
+     *
+     * @param startDate start date of the simulation
+     * @param endDate   end date of the simulation
+     */
+    public void init(LogicalDateTime startDate, LogicalDateTime endDate) {
+        this.start = startDate;
+        this.end = endDate;
+        this.current = startDate;
+        simulatedEntities.forEach(SimEntity::requestInit);
     }
 
     public void simulate() {
