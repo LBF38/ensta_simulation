@@ -32,7 +32,7 @@ Pour implémenter le sujet, il faut:
 - modéliser les créneaux horaires
 - modéliser les taux d'avancement d'une donnée continue (ex: quantité de traitement)
 
-> [!TIPS]
+> [!TIP]
 > On peut poster un même évènement à T0.
 
 ## Concernant les états
@@ -50,3 +50,21 @@ Ainsi, on ne peut rien faire avec les objets non initialisés.
 
 Et cela permet également de garantir le fait que l'on ait toutes les entités simulées initialisées lors du début de la
 simulation.
+
+## Configuration en JSON
+
+Pour faciliter la configuration de notre simulation et des différents objets à créer, on souhaiterait utiliser des
+fichiers de configuration au format JSON.
+
+Ainsi, un premier test est réalisé dans la classe `InitWorkshop` afin de voir comment fonctionne la librairie `jakarta`.
+
+Bref, on constate donc que, pour pouvoir utiliser cette méthode de création d'objets, on doit créer un constructeur de
+classe par défaut (pas d'arguments) car ce seront ces arguments par défaut qui seront utilisés en cas de problèmes de
+parsing du JSON lors de la création d'une classe.
+
+Ce point est démontré dans la méthode `main` de la classe `InitWorkshop`. Le second json comporte une erreur, ce qui est
+remplacé par l'argument par défaut lors de l'initialisation.
+
+On peut également initialiser une liste d'objets/classes configuré à partir d'un json (bien formatté, naturellement).
+Pour cela, il suffit d'utiliser la méthode `jsonb.fromJson(config, classToInstanciate);`.
+(cf. codebase pour un exemple concret).
