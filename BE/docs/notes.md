@@ -28,9 +28,25 @@ ainsi mettre à jour les évènements en fonction des états des machines.
 Cette partie reprend les informations fournies par le prof sur des pistes de modélisation concernant le sujet de BE.
 
 Pour implémenter le sujet, il faut:
+
 - modéliser les créneaux horaires
 - modéliser les taux d'avancement d'une donnée continue (ex: quantité de traitement)
 
 > [!TIPS]
 > On peut poster un même évènement à T0.
 
+## Concernant les états
+
+Il est important de dissocier les états des entités simulées des objets, langages et de l'engine de simulation.
+Les états sont explicitement définis afin de dissocier la gestion du cycle de vie de celui du moteur de simulation.
+
+Ainsi, pour les états de mort de nos entités, il est préférable de définir des états explicites, un état MORT, afin que
+l'entité soit toujours présente dans la simulation tout en étant mort.
+
+De même, pour l'initialisation, il est important d'avoir un état INITIALIZED pour bien dissocier l'état de création des
+objets de celui d'initalisation de celles ci.
+
+Ainsi, on ne peut rien faire avec les objets non initialisés.
+
+Et cela permet également de garantir le fait que l'on ait toutes les entités simulées initialisées lors du début de la
+simulation.
