@@ -14,8 +14,8 @@ public class SimplePlan extends Plan {
     LogicalDateTime end;
     LinkedList<Scenario> scenarios;
 
-    public SimplePlan(int nbReplique, LogicalDateTime start, LogicalDateTime end) {
-        super(nbReplique);
+    public SimplePlan(int replicas, LogicalDateTime start, LogicalDateTime end) {
+        super(replicas);
         scenarios = new LinkedList<>();
         this.start = start;
         this.end = end;

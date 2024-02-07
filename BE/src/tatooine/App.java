@@ -4,7 +4,7 @@ import engine.SimplePlanMonitor;
 import enstabretagne.base.logger.Logger;
 import enstabretagne.base.time.LogicalDateTime;
 
-public class main {
+public class App {
     public static void main(String[] args) {
         Logger.load();
 
@@ -15,5 +15,7 @@ public class main {
 
         SimplePlanMonitor spm = new SimplePlanMonitor(plan);
         spm.run();
+
+        Logger.Terminate();
     }
 }
