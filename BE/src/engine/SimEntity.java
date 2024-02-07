@@ -21,12 +21,11 @@ public abstract class SimEntity {
         this.engine.addEntity(this);
     }
 
+    /**
+     * @return the state of the entity
+     */
     protected EntityState getState() {
         return state;
-    }
-
-    public InitData getInitData() {
-        return initData;
     }
 
     public SimEngine getEngine() {
