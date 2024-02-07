@@ -50,3 +50,11 @@ Ainsi, on ne peut rien faire avec les objets non initialisés.
 
 Et cela permet également de garantir le fait que l'on ait toutes les entités simulées initialisées lors du début de la
 simulation.
+
+## Evènements
+
+Pour gérer les activités, avec leur liste d'attente, on part sur un modèle de demande/réponse.
+
+Quand un client arrive sur une activité, il demande à l'activité s'il y a encore de la place.
+
+En fonction de la réponse, il peut commencer l'activité ou il est directement placé dans la liste d'attente.
