@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/BE/BE.iml" filepath="$PROJECT_DIR$/BE/BE.iml" />
       <module fileurl="file://$PROJECT_DIR$/td_correction/TD_1.1_base_common_usages/TD_1.1_base_common_usages.iml" filepath="$PROJECT_DIR$/td_correction/TD_1.1_base_common_usages/TD_1.1_base_common_usages.iml" />
       <module fileurl="file://$PROJECT_DIR$/td_correction/TD_1.2_solution_simpleengine/TD_1.2_solution_simpleengine.iml" filepath="$PROJECT_DIR$/td_correction/TD_1.2_solution_simpleengine/TD_1.2_solution_simpleengine.iml" />
       <module fileurl="file://$PROJECT_DIR$/TD_1_base_common/TD_1_base_common.iml" filepath="$PROJECT_DIR$/TD_1_base_common/TD_1_base_common.iml" />
