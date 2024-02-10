@@ -1,6 +1,7 @@
 // This file is an example of a default workshops configuration file.
 [
   {
+    "$schema": "workshop.schema.json",
     "name": "Workshop 1",
     "capacity": 8,
     "frequenting": "planned",
@@ -35,7 +36,8 @@
     // in days
     "failure_recovery": 5,
     // in days
-    "queue_type": "organized", // "organized" or "random"
-    "queue_capacity": 8
+    "queue_type": "organized",
+    // "organized" or "random"
+    "queue_capacity": 10
   }
 ]
