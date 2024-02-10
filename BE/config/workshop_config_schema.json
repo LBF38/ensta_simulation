@@ -1,0 +1,41 @@
+// This file is an example of a default workshops configuration file.
+[
+  {
+    "name": "Workshop 1",
+    "capacity": 8,
+    "frequenting": "planned",
+    // ^ "planned" or "free"
+    "open": {
+      "day": 1,
+      "month": 1,
+      "year": 2024,
+      "hour": 8,
+      "minute": 0,
+      // can be omitted
+      "second": 0
+      // can be omitted
+    },
+    "close": {
+      "day": 1,
+      "month": 1,
+      "year": 2024,
+      "hour": 8,
+      "minute": 0,
+      // can be omitted
+      "second": 0
+      // can be omitted
+    },
+    "duration": 10,
+    // workshop duration in minutes
+    "efficiency": 10,
+    // workshop efficiency
+    "failure_frequency": 30,
+    // in days
+    "failure_std_dev": 5,
+    // in days
+    "failure_recovery": 5,
+    // in days
+    "queue_type": "organized", // "organized" or "random"
+    "queue_capacity": 8
+  }
+]

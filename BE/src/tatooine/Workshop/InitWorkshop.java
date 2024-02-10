@@ -5,6 +5,7 @@ import enstabretagne.base.time.LogicalDuration;
 import enstabretagne.engine.InitData;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
+import utils.DateTimeFrenchFormat;
 
 public class InitWorkshop extends InitData {
     private static final Jsonb jsonb = JsonbBuilder.create();
@@ -20,7 +21,7 @@ public class InitWorkshop extends InitData {
      * => maybe only put it as an integer and it will be converted to LogicalDuration in the Workshop class.
      */
     public LogicalDuration workshopDuration = LogicalDuration.ofMinutes(10); // TODO: add it to class params.
-    public int efficacity = 1; // TODO: add it to class params.
+    public int efficiency = 1; // TODO: add it to class params.
     /**
      * The frequency of the failure
      * In days.
@@ -36,8 +37,8 @@ public class InitWorkshop extends InitData {
      * In days.
      */
     public LogicalDuration failureRecovery = LogicalDuration.ofDay(3); // TODO: add it to class params.
-    public QueueType queueType = QueueType.ORGANISED; // TODO: add it to class params.
-    public int maxQueueSize = 10; // TODO: add it to class params.
+    public QueueType queueType = QueueType.ORGANIZED; // TODO: add it to class params.
+    public int queueCapacity = 10; // TODO: add it to class params.
 
     public InitWorkshop(String name, int capacity, Frequenting frequenting, LogicalDateTime opening, LogicalDateTime closing) {
         super(name);
@@ -51,8 +52,8 @@ public class InitWorkshop extends InitData {
         super("default workshop");
         this.capacity = 0;
         this.frequenting = Frequenting.FREE;
-        this.opening = new LogicalDateTime("01/01/2024 07:15:00.0000000");
-        this.closing = new LogicalDateTime("01/01/2024 14:00:00.0000000");
+        this.opening = new LogicalDateTime(DateTimeFrenchFormat.of(1, 1, 2024, 7, 15));
+        this.closing = new LogicalDateTime(DateTimeFrenchFormat.of(1, 1, 2024, 14, 0));
     }
 
     /**
@@ -103,6 +104,6 @@ public class InitWorkshop extends InitData {
     }
 
     public enum QueueType {
-        ORGANISED, RANDOM
+        ORGANIZED, RANDOM
     }
 }
