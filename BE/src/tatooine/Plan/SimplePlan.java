@@ -1,4 +1,4 @@
-package tatooine;
+package tatooine.Plan;
 
 import engine.Plan;
 import engine.Scenario;
