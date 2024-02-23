@@ -25,7 +25,7 @@ public class SimplePlan extends Plan {
     public void initScenarii() {
         for (int i = 0; i < getReplicas(); i++)
             scenarios.add(
-                    new SimpleScenario(getEngine(), new InitScenario("Simple scenario", i, start, end, 2)));
+                    new SimpleScenario(getEngine(), new InitScenario("Simple scenario", i, 5, start, end, 2)));
     }
 
     @Override

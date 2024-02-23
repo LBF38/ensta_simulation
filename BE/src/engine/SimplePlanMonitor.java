@@ -31,7 +31,7 @@ public class SimplePlanMonitor {
             // for each scenario, we ask for the creation of the corresponding simulated entities
             plan.nextScenario().createSimulatedEntities();
 
-            // Start the engine.
+            // Start the engine. & requestInit() of the scenario and all its entities
             engine.init();
             // Start the simulation.
             engine.simulate();

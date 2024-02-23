@@ -9,11 +9,13 @@ public abstract class ScenarioInitData extends InitData {
     private LogicalDateTime start;
     private LogicalDateTime end;
     private int seed;
+    private int replica;
 
-    public ScenarioInitData(String name, LogicalDateTime start, LogicalDateTime end, int seed) {
+    public ScenarioInitData(String name, LogicalDateTime start, LogicalDateTime end, int replica, int seed) {
         super(name);
         this.start = start;
         this.end = end;
+        this.replica = replica;
         this.seed = seed;
     }
 
@@ -27,5 +29,9 @@ public abstract class ScenarioInitData extends InitData {
 
     public int getSeed() {
         return seed;
+    }
+
+    public int getReplica() {
+        return replica;
     }
 }

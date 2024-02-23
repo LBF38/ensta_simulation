@@ -13,8 +13,8 @@ Il faut que ce processus de production des clients connaisse les horaires d'ouve
 Ainsi, pour la gestion des évènements annulés, on peut:
 
 - Annuler l'évènement en le supprimant.
-    - pour cela, il faut garder un lien vers l'évènement posté.
-    - Il faut donc utiliser un pattern de listener.
+  - pour cela, il faut garder un lien vers l'évènement posté.
+  - Il faut donc utiliser un pattern de listener.
 - Déposter l'évènement ou poster un évènement qui annule cet évènement ?
 - => autre modélisation personnalisé.
 
@@ -100,3 +100,22 @@ Calculator.goFrom(workshop1, workshop2);
 ```
 
 Quelque chose comme ça. A voir avec les implémentations.
+
+## Initialisation
+
+Quelques notes concernant l'initialisation des entités, scénarios et de la simulation de manière générale.
+
+Bien penser que l'initialisation se fait en deux étapes:
+
+1. On crée les objets et entités simulées
+
+    - Cela correspond à la création des objets en Java
+    - Ainsi, cela se traduit par l'appel des constructeurs des classes Java
+
+2. On initialise le moteur de simulation
+
+    - C'est le moteur qui va ensuite demander l'initialisation à toutes les entités de la simulation.
+    - Cela leur permet de se lancer (passer à l'état `INITIALIZED`)
+    - Et de lancer des actions ou évènements en fonction de ce qu'ils ont à faire.
+    - Bref, c'est donc là qu'il faut mettre des évènements et qu'on peut accéder à des méthodes comme `now()` depuis
+      l'`engine`, car ce dernier est initialisé.

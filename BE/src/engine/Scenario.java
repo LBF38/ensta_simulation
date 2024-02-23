@@ -21,7 +21,7 @@ public abstract class Scenario extends SimEntity {
 
     public Scenario(SimEngine engine, ScenarioInitData init) {
         super(engine, init);
-        id = new ScenarioId(init.getName(), init.getSeed());
+        id = new ScenarioId(init.getName(), init.getReplica());
         seed = ((ScenarioInitData) getInitData()).getSeed();
     }
 
