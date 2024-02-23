@@ -58,6 +58,10 @@ public class SimEngine implements ISimulationDateProvider, IScenarioIdProvider {
         this.scheduler.add(event);
     }
 
+    protected void removeEvent(SimEvent event) {
+        this.scheduler.remove(event);
+    }
+
     /**
      * Initialize the simulation engine with the current scenario's start and end date.
      * It requests the initialization of the scenario.
