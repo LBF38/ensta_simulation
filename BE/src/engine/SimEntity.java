@@ -54,6 +54,16 @@ public abstract class SimEntity {
         this.engine.addEvent(event);
     }
 
+    public void cancel(SimEvent event) {
+        cancel(event, null);
+    }
+
+    public void cancel(SimEvent event, SimEntity to) {
+        event.from = this;
+        event.to = to;
+        this.engine.removeEvent(event);
+    }
+
     public void requestInit() {
         if (state != EntityState.NONE) {
             return;
