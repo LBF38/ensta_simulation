@@ -6,6 +6,8 @@ import engine.SimEntity;
 import enstabretagne.base.logger.ToRecord;
 import enstabretagne.base.time.LogicalDateTime;
 import enstabretagne.base.time.LogicalDuration;
+import tatooine.Events.CloseWorkshop;
+import tatooine.Events.OpenWorkshop;
 
 @ToRecord(name = "Workshop")
 public class Workshop extends SimEntity {
@@ -48,6 +50,20 @@ public class Workshop extends SimEntity {
         this.failureRecovery = LogicalDuration.ofDay(ini.failureRecovery);
         this.failureStandardDeviation = LogicalDuration.ofDay(ini.failureStandardDeviation);
         this.initData = ini;
+        // TODO: idea - rather than having everything here, it can be encapsulated inside the getters of each property.
+        // => for example, getOpening() will return a LogicalDateTime object based on the ini.opening.
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+        send(new OpenWorkshop(this.opening, this));
+        send(new CloseWorkshop(this.closing, this));
+//        send(new WorkshopFailure(this.failureFrequency, this));
+    }
+    @ToRecord(name = "type")
+    public InitWorkshop.WorkshopType getType() {
+        return initData.type;
     }
 
     @ToRecord(name = "duration")

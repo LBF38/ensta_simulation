@@ -6,7 +6,7 @@ import jakarta.json.bind.JsonbBuilder;
 
 public class InitWorkshop extends InitData {
     private static final Jsonb jsonb = JsonbBuilder.create();
-
+    public final WorkshopType type;
     public Frequenting frequenting;
     public int capacity;
     public WorkshopTime opening;
@@ -36,8 +36,9 @@ public class InitWorkshop extends InitData {
     public QueueType queueType;
     public int queueCapacity;
 
-    public InitWorkshop(String name, Frequenting frequenting, WorkshopTime opening, WorkshopTime closing, int capacity, int duration, int efficiency, int failureFrequency, int failureStandardDeviation, int failureRecovery, QueueType queueType, int queueCapacity) {
+    public InitWorkshop(String name, WorkshopType type, Frequenting frequenting, WorkshopTime opening, WorkshopTime closing, int capacity, int duration, int efficiency, int failureFrequency, int failureStandardDeviation, int failureRecovery, QueueType queueType, int queueCapacity) {
         super(name);
+        this.type = type;
         this.capacity = capacity;
         this.frequenting = frequenting;
         this.opening = opening;
@@ -53,6 +54,7 @@ public class InitWorkshop extends InitData {
 
     public InitWorkshop() {
         super("default workshop");
+        this.type = WorkshopType.TERRES;
         this.capacity = 0;
         this.frequenting = Frequenting.FREE;
         this.opening = new WorkshopTime(1, 1, 2024, 7, 15, 0, 0);
@@ -78,7 +80,7 @@ public class InitWorkshop extends InitData {
     }
 
     public static void main(String[] args) {
-        InitWorkshop initWorkshop = new InitWorkshop("Workshop1", Frequenting.FREE, new WorkshopTime(5, 2, 2024, 8, 25), new WorkshopTime(5, 2, 2024, 15, 0), 10, 25, 5, 40, 2, 5, QueueType.RANDOM, 20);
+        InitWorkshop initWorkshop = new InitWorkshop("Workshop1", WorkshopType.TERRES, Frequenting.FREE, new WorkshopTime(5, 2, 2024, 8, 25), new WorkshopTime(5, 2, 2024, 15, 0), 10, 25, 5, 40, 2, 5, QueueType.RANDOM, 20);
         String json = jsonb.toJson(initWorkshop);
         System.out.println(json);
 
@@ -109,6 +111,10 @@ public class InitWorkshop extends InitData {
     private static void testInitWorkshopFromJson(InitWorkshop defaultWorkshop, InitWorkshop testWorkshop) {
         System.out.println(testWorkshop);
         System.out.println("Test name: " + (defaultWorkshop.getName().equals(testWorkshop.getName()) ? "OK" : "KO"));
+    }
+
+    public enum WorkshopType {
+        TERRES, FILIFORMES, ETUVE, BAIN, DOUCHE, VISAGE
     }
 
     public enum Frequenting {
