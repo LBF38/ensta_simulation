@@ -11,7 +11,9 @@
     "Error",
     "Detail",
     "Fatal",
-    "Data"
+    "Data",
+    "DataSimple",
+    "DataRecordable"
   ],
   "loggerConfs": [
     {
@@ -32,7 +34,8 @@
         "Error",
         "Fatal",
         "Data",
-        "DataSimple"
+        "DataSimple",
+        "DataRecordable"
       ]
     },
     {
@@ -49,7 +52,10 @@
         "Information",
         "Error",
         "Detail",
-        "Fatal"
+        "Fatal",
+        "Data",
+        "DataSimple",
+        "DataRecordable"
       ]
     }
   ]

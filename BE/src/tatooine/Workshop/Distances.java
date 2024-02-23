@@ -1,5 +1,6 @@
 package tatooine.Workshop;
 
+import enstabretagne.base.logger.IRecordable;
 import enstabretagne.base.logger.Logger;
 import enstabretagne.base.logger.ToRecord;
 import enstabretagne.base.time.LogicalDuration;
@@ -15,26 +16,26 @@ public class Distances {
 
     public static void log() {
         Logger.Information(null, "Distances - log", "Log the Walking durations");
-        Logger.DataSimple("Distances - log", "Workshop1", "Workshop2", "Duration");
+//        Logger.DataSimple("Distances - log", "Workshop1", "Workshop2", "Duration");
         for (var entry : walkingDurations.entrySet()) {
-//            Logger.Data(new IRecordable() {
-//                @Override
-//                public String[] getTitles() {
-//                    return new String[]{"Workshop1", "Workshop2", "Duration"};
-//                }
-//
-//                @Override
-//                public String[] getRecords() {
-//                    return new String[]{entry.getKey().get(0).toString(), entry.getKey().get(1).toString(), entry.getValue().toString()};
-//                }
-//
-//                @Override
-//                public String getClassement() {
-//                    return "Classement - Distances";
-//                }
-//            });
+            Logger.Data(new IRecordable() {
+                @Override
+                public String[] getTitles() {
+                    return new String[]{"Workshop1", "Workshop2", "Duration"};
+                }
+
+                @Override
+                public String[] getRecords() {
+                    return new String[]{entry.getKey().get(0).toString(), entry.getKey().get(1).toString(), entry.getValue().toString()};
+                }
+
+                @Override
+                public String getClassement() {
+                    return "Classement - Distances";
+                }
+            });
             // ^ TODO: check if IRecordable could work ?
-            Logger.DataSimple("Distances - log", entry.getKey().get(0).toString(), entry.getKey().get(1).toString(), entry.getValue().toString());
+//            Logger.DataSimple("Distances - log", entry.getKey().get(0).toString(), entry.getKey().get(1).toString(), entry.getValue().toString());
         }
     }
 
