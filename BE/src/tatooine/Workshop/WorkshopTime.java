@@ -1,5 +1,6 @@
 package tatooine.Workshop;
 
+import enstabretagne.base.time.LogicalDateTime;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
 import jakarta.json.bind.annotation.JsonbProperty;
@@ -12,6 +13,14 @@ public record WorkshopTime(int day, int month, int year, int hour,
 
     public WorkshopTime() {
         this(1, 1, 2024, 0, 0, 0, 0);
+    }
+
+    public WorkshopTime(int day, int month, int year, int hour, int minute) {
+        this(day, month, year, hour, minute, 0, 0);
+    }
+
+    public WorkshopTime(LogicalDateTime dateTime, int hour, int minute) {
+        this(DateTimeFrenchFormat.toWorkshopTime(dateTime.toString()).day, DateTimeFrenchFormat.toWorkshopTime(dateTime.toString()).month, DateTimeFrenchFormat.toWorkshopTime(dateTime.toString()).year, hour, minute, 0, 0);
     }
 
     public static WorkshopTime fromJson(String json) {
