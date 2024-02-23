@@ -160,6 +160,7 @@ public class Workshop extends SimEntity {
     public Client getNextClient() {
         if (getQueueType() == QueueType.RANDOM) {
             // TODO: implement the randomized queue.
+            if (queue.isEmpty()) return null;
             return queue.stream().toList().get(this.getEngine().getRandomGenerator().nextInt(queue.size()));
         }
         return queue.peek(); // default = ORGANIZED
@@ -202,7 +203,15 @@ public class Workshop extends SimEntity {
             // client.addEfficiency(getEfficiency());
             currentClients.remove(client);
             Logger.Information(this, "endWorkshop", "Client %s ends the workshop %s at %s".formatted(client.getName(), this.getType(), this.now()));
+            if (!client.getAttributedWorkshops().isEmpty()) {
+                var nextWorkshopType = client.getAttributedWorkshops().remove(0);
+                var workshopDistance = Distances.getWalkingDuration(this.getType(), nextWorkshopType);
+                send(new GoToWorkshop(this.now().add(workshopDistance), client, nextWorkshopType));
+            }
         }
+        // The next client in the queue starts the workshop
+        if (getNextClient() == null) return;
+        send(new StartWorkshop(now(), getNextClient(), this));
     }
 
     public void closeWorkshop() {

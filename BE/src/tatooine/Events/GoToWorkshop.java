@@ -55,8 +55,8 @@ public class GoToWorkshop extends SimEvent<Client> {
         if (r.getType() == WorkshopType.RELAXATION) {
             // By default, the client goes to the relaxation workshop if the workshop is closed or full.
             Logger.Information(this, "GoToWorkshop", "The workshop %s is closed or full, the client %s goes to the relaxation workshop".formatted(this.workshop, this.from.getName()));
-            r.addClient((Client) this.from);
-            // TODO: maybe try another time to add the client to his workshop
+            r.addClient(this.from);
+            // TODO: maybe try another time to add the client to his workshop => at least add again the workshop to his affected workshops.
         }
     }
 }
