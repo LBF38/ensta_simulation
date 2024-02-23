@@ -6,9 +6,10 @@ import tatooine.Client.InitClient;
 import tatooine.Events.CreateClient;
 import tatooine.Events.CreateWorkshops;
 import tatooine.Events.RecordData;
-import tatooine.Workshop.InitWorkshop;
+import tatooine.Workshop.InitWorkshop.WorkshopType;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MonthScenario extends Scenario {
@@ -34,7 +35,7 @@ public class MonthScenario extends Scenario {
         send(new RecordData(now(), this));
     }
 
-    private List<InitWorkshop.WorkshopType> attributedWorkshops(int i, int maxCapacity) {
+    private List<WorkshopType> attributedWorkshops(int i, int maxCapacity) {
 //        var rates = List.of(0.2, 0.35, 0.3, 0.15);
         var rates = List.of(0.2, 0.55, 0.85, 1.0);
         for (int k = 0; k < rates.size(); k++) {
@@ -45,12 +46,12 @@ public class MonthScenario extends Scenario {
         return generateRandomAttributedWorkshops(3); // default value
     }
 
-    private List<InitWorkshop.WorkshopType> generateRandomAttributedWorkshops(int maxWorkshops) {
-        var workshopsTypes = InitWorkshop.WorkshopType.values();
-        List<InitWorkshop.WorkshopType> workshops = new ArrayList<>();
+    private List<WorkshopType> generateRandomAttributedWorkshops(int maxWorkshops) {
+        var workshopsTypes = Arrays.stream(WorkshopType.values()).filter(w -> w != WorkshopType.HOME && w != WorkshopType.RELAXATION).toList();
+        List<WorkshopType> workshops = new ArrayList<>();
         for (int j = 0; j < maxWorkshops; j++) {
-            int randomIndex = this.getEngine().getRandomGenerator().nextInt(0, workshopsTypes.length);
-            workshops.add(workshopsTypes[randomIndex]);
+            int randomIndex = this.getEngine().getRandomGenerator().nextInt(0, workshopsTypes.size());
+            workshops.add(workshopsTypes.get(randomIndex));
         }
         return workshops;
     }

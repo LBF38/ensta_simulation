@@ -3,7 +3,10 @@ package tatooine.Client;
 import engine.SimEngine;
 import engine.SimEntity;
 import enstabretagne.base.logger.ToRecord;
-import tatooine.Workshop.InitWorkshop;
+import enstabretagne.base.time.LogicalDuration;
+import tatooine.Events.GoToWorkshop;
+import tatooine.Workshop.Distances;
+import tatooine.Workshop.InitWorkshop.WorkshopType;
 
 import java.util.List;
 
@@ -16,11 +19,14 @@ public class Client extends SimEntity {
     @Override
     protected void init() {
         super.init();
-//        send(new GoToWorkshop(this.getEngine(),this));
+        var workshop = getAttributedWorkshops().remove(0);
+        var clientArrival = now().add(LogicalDuration.ofHours(7).add(LogicalDuration.ofMinutes(15)));
+        var walking = clientArrival.add(Distances.getWalkingDuration(WorkshopType.HOME, workshop));
+        send(new GoToWorkshop(walking, this, workshop));
     }
 
     @ToRecord(name = "AttributedWorkshops")
-    public List<InitWorkshop.WorkshopType> getAttributedWorkshops() {
+    public List<WorkshopType> getAttributedWorkshops() {
         return ((InitClient) this.getInitData()).workshops;
     }
 

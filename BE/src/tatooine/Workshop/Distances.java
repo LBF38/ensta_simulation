@@ -44,7 +44,12 @@ public class Distances {
     }
 
     public static LogicalDuration getWalkingDuration(InitWorkshop.WorkshopType workshop1, InitWorkshop.WorkshopType workshop2) {
-        return walkingDurations.get(List.of(workshop1, workshop2));
+        var duration = walkingDurations.get(List.of(workshop1, workshop2));
+        if (duration == null) {
+            Logger.Warning(Distances.class, "Distances - getWalkingDuration", "No duration found for the workshops %s and %s".formatted(workshop1, workshop2));
+            return LogicalDuration.ofMinutes(0);
+        }
+        return duration;
     }
 
     public static void main(String[] args) {
@@ -52,6 +57,8 @@ public class Distances {
         setWalkingDuration(InitWorkshop.WorkshopType.BAIN, InitWorkshop.WorkshopType.DOUCHE, LogicalDuration.ofMinutes(5));
         System.out.println(getWalkingDuration(InitWorkshop.WorkshopType.BAIN, InitWorkshop.WorkshopType.DOUCHE));
         System.out.println(getWalkingDuration(InitWorkshop.WorkshopType.DOUCHE, InitWorkshop.WorkshopType.BAIN));
+        System.out.println(getWalkingDuration(InitWorkshop.WorkshopType.BAIN, InitWorkshop.WorkshopType.BAIN));
+        System.out.println(getWalkingDuration(InitWorkshop.WorkshopType.HOME, InitWorkshop.WorkshopType.BAIN));
     }
 
     @ToRecord(name = "Keys")

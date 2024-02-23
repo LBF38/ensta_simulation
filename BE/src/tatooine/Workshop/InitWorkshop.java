@@ -114,7 +114,7 @@ public class InitWorkshop extends InitData {
     }
 
     public enum WorkshopType {
-        TERRES, FILIFORMES, ETUVE, BAIN, DOUCHE, VISAGE
+        HOME, RELAXATION, TERRES, FILIFORMES, ETUVE, BAIN, DOUCHE, VISAGE
     }
 
     public enum Frequenting {

@@ -16,6 +16,6 @@ public class RecordData extends SimEvent {
     public void process() {
         Logger.Information(this, "RecordData", "Data recorded at " + this.getOccurrenceDate());
         this.from.getEngine().search(e -> e instanceof Client).forEach(Logger::Data);
-        this.rescheduleAt(this.getOccurrenceDate().add(LogicalDuration.ofDay(1)));
+        this.rescheduleAt(this.getOccurrenceDate().add(LogicalDuration.ofHours(1)));
     }
 }
