@@ -3,11 +3,19 @@ package tatooine.Workshop;
 
 import engine.SimEngine;
 import engine.SimEntity;
+import enstabretagne.base.logger.Logger;
 import enstabretagne.base.logger.ToRecord;
 import enstabretagne.base.time.LogicalDateTime;
 import enstabretagne.base.time.LogicalDuration;
+import tatooine.Client.Client;
 import tatooine.Events.CloseWorkshop;
 import tatooine.Events.OpenWorkshop;
+import tatooine.Workshop.InitWorkshop.Frequenting;
+import tatooine.Workshop.InitWorkshop.QueueType;
+import tatooine.Workshop.InitWorkshop.WorkshopType;
+
+import java.util.LinkedList;
+import java.util.Queue;
 
 @ToRecord(name = "Workshop")
 public class Workshop extends SimEntity {
@@ -40,6 +48,7 @@ public class Workshop extends SimEntity {
      */
     private final LogicalDuration failureRecovery;
     private final InitWorkshop initData;
+    private final Queue<Client> queue;
 
     public Workshop(SimEngine engine, InitWorkshop ini) {
         super(engine, ini);
@@ -52,17 +61,21 @@ public class Workshop extends SimEntity {
         this.initData = ini;
         // TODO: idea - rather than having everything here, it can be encapsulated inside the getters of each property.
         // => for example, getOpening() will return a LogicalDateTime object based on the ini.opening.
+        this.queue = new LinkedList<>();
     }
 
     @Override
     protected void init() {
         super.init();
         send(new OpenWorkshop(this.opening, this));
+        // TODO: add the failure event
+        // TODO: add the next client event => see how to do this.
         send(new CloseWorkshop(this.closing, this));
 //        send(new WorkshopFailure(this.failureFrequency, this));
     }
+
     @ToRecord(name = "type")
-    public InitWorkshop.WorkshopType getType() {
+    public WorkshopType getType() {
         return initData.type;
     }
 
@@ -107,7 +120,7 @@ public class Workshop extends SimEntity {
     }
 
     @ToRecord(name = "frequenting")
-    public InitWorkshop.Frequenting getFrequenting() {
+    public Frequenting getFrequenting() {
         return initData.frequenting;
     }
 
@@ -117,7 +130,42 @@ public class Workshop extends SimEntity {
     }
 
     @ToRecord(name = "queueType")
-    public InitWorkshop.QueueType getQueueType() {
+    public QueueType getQueueType() {
         return initData.queueType;
+    }
+
+    @ToRecord(name = "queue")
+    public Queue<Client> getQueue() {
+        return queue;
+    }
+
+    public boolean addClient(Client client) {
+        if (queue.size() < getQueueCapacity()) {
+            Logger.Detail(this, "addClient", "Client %s added to the workshop %s queue.".formatted(client, this));
+            queue.add(client);
+            return true;
+        }
+        Logger.Detail(this, "addClient", "Client %s could not be added to the workshop %s queue. Max capacity reached.".formatted(client, this));
+        return false;
+    }
+
+    public boolean canAddClient() {
+        return queue.size() < getQueueCapacity();
+    }
+
+    public Client getNextClient() {
+        if (getQueueType() == QueueType.RANDOM) {
+            // TODO: implement the randomized queue.
+            return queue.peek();
+        }
+        return queue.peek(); // default = ORGANIZED
+    }
+
+    public boolean isOpen() {
+        return now().compareTo(opening) >= 0 && now().compareTo(closing) < 0;
+    }
+
+    public boolean isClosed() {
+        return now().compareTo(closing) >= 0;
     }
 }
