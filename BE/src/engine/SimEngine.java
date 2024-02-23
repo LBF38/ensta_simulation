@@ -54,6 +54,10 @@ public class SimEngine implements ISimulationDateProvider, IScenarioIdProvider {
         this.simulatedEntities.add(simEntity);
     }
 
+    public void removeEntity(SimEntity simEntity) {
+        this.simulatedEntities.remove(simEntity);
+    }
+
     protected void addEvent(SimEvent event) {
         this.scheduler.add(event);
     }
