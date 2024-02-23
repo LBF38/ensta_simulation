@@ -95,15 +95,15 @@ public class SimEngine implements ISimulationDateProvider, IScenarioIdProvider {
     }
 
     public void simulate() {
-        Logger.Information(this, "simulate", "current = " + this.current);
+        Logger.Detail(this, "simulate", "current = " + this.current);
         while (hasNextEvent()) {
-            Logger.Information(this, "simulate", "events.size() = " + this.scheduler.size());
+            Logger.Detail(this, "simulate", "events.size() = " + this.scheduler.size());
             SimEvent event = this.scheduler.first();
             this.scheduler.remove(event);
             current = event.getOccurrenceDate();
-            Logger.Information(this, "simulate", "event = " + event);
+            Logger.Detail(this, "simulate", "event = " + event);
             event.process();
-            Logger.Information(this, "simulate", "currentDate = " + this.current);
+            Logger.Detail(this, "simulate", "currentDate = " + this.current);
         }
     }
 
@@ -133,11 +133,11 @@ public class SimEngine implements ISimulationDateProvider, IScenarioIdProvider {
     private boolean hasNextEvent() {
         for (SimEvent e : scheduler) {
             if (e.getOccurrenceDate().compareTo(end) <= 0) {
-                Logger.Information(this, "hasNextEvent", "true");
+                Logger.Detail(this, "hasNextEvent", "true");
                 return true;
             }
         }
-        Logger.Information(this, "hasNextEvent", "false");
+        Logger.Detail(this, "hasNextEvent", "false");
         return false;
     }
 
