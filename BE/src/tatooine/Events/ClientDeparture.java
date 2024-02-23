@@ -18,5 +18,7 @@ public class ClientDeparture extends SimEvent {
     @Override
     public void process() {
         Logger.Information(this, "ClientDeparture", "Client departed at " + this.getOccurrenceDate());
+        // TODO: kill the client and/or remove it from the simulation
+        // => call client.terminate() ?
     }
 }

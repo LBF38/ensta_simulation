@@ -36,7 +36,7 @@ public class InitWorkshop extends InitData {
     public QueueType queueType;
     public int queueCapacity;
 
-    public InitWorkshop(String name, int capacity, Frequenting frequenting, WorkshopTime opening, WorkshopTime closing, int duration, int efficiency, int failureFrequency, int failureStandardDeviation, int failureRecovery, QueueType queueType, int queueCapacity) {
+    public InitWorkshop(String name, Frequenting frequenting, WorkshopTime opening, WorkshopTime closing, int capacity, int duration, int efficiency, int failureFrequency, int failureStandardDeviation, int failureRecovery, QueueType queueType, int queueCapacity) {
         super(name);
         this.capacity = capacity;
         this.frequenting = frequenting;
@@ -78,7 +78,7 @@ public class InitWorkshop extends InitData {
     }
 
     public static void main(String[] args) {
-        InitWorkshop initWorkshop = new InitWorkshop("Workshop1", 10, Frequenting.FREE, new WorkshopTime(5, 2, 2024, 8, 25, 0, 0), new WorkshopTime(5, 2, 2024, 15, 0, 0, 0), 25, 5, 40, 2, 5, QueueType.RANDOM, 20);
+        InitWorkshop initWorkshop = new InitWorkshop("Workshop1", Frequenting.FREE, new WorkshopTime(5, 2, 2024, 8, 25), new WorkshopTime(5, 2, 2024, 15, 0), 10, 25, 5, 40, 2, 5, QueueType.RANDOM, 20);
         String json = jsonb.toJson(initWorkshop);
         System.out.println(json);
 
