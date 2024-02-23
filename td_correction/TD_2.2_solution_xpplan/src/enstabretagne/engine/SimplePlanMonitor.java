@@ -39,7 +39,6 @@ public class SimplePlanMonitor {
         }
         engine.terminate(true);
         Logger.Information(null, "main", "Fin du plan d'exp�rience");
-        Logger.Terminate();
 
     }
 

@@ -144,6 +144,9 @@ public class SimEngine implements ISimulationDateProvider, IScenarioIdProvider {
 
     @Override
     public ScenarioId getScenarioId() {
+        if (currentScenario == null) {
+            return null;
+        }
         return currentScenario.getID();
     }
 }

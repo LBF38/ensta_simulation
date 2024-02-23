@@ -32,7 +32,7 @@ Pour implémenter le sujet, il faut:
 - modéliser les créneaux horaires
 - modéliser les taux d'avancement d'une donnée continue (ex: quantité de traitement)
 
-> [!TIPS]
+> [!TIP]
 > On peut poster un même évènement à T0.
 
 ## Concernant les états
@@ -58,3 +58,45 @@ Pour gérer les activités, avec leur liste d'attente, on part sur un modèle de
 Quand un client arrive sur une activité, il demande à l'activité s'il y a encore de la place.
 
 En fonction de la réponse, il peut commencer l'activité ou il est directement placé dans la liste d'attente.
+
+## Configuration en JSON
+
+Pour faciliter la configuration de notre simulation et des différents objets à créer, on souhaiterait utiliser des
+fichiers de configuration au format JSON.
+
+Ainsi, un premier test est réalisé dans la classe `InitWorkshop` afin de voir comment fonctionne la librairie `jakarta`.
+
+Bref, on constate donc que, pour pouvoir utiliser cette méthode de création d'objets, on doit créer un constructeur de
+classe par défaut (pas d'arguments) car ce seront ces arguments par défaut qui seront utilisés en cas de problèmes de
+parsing du JSON lors de la création d'une classe.
+
+Ce point est démontré dans la méthode `main` de la classe `InitWorkshop`. Le second json comporte une erreur, ce qui est
+remplacé par l'argument par défaut lors de l'initialisation.
+
+On peut également initialiser une liste d'objets/classes configuré à partir d'un json (bien formatté, naturellement).
+Pour cela, il suffit d'utiliser la méthode `jsonb.fromJson(config, classToInstanciate);`.
+(cf. codebase pour un exemple concret).
+
+> [!IMPORTANT]
+> Il semblerait qu'il y ait quelques erreurs avec des types plus complexes de données.
+> Ainsi, à voir comment on fonctionne pour ces types de données, et si on les inclut dans le fichier de configuration
+> JSON ou non.
+
+## Distances entre zones
+
+Afin de faciliter la gestion des temps de marche entre zones, l'idée serait de créer une classe qui enregistre ces
+distances entre deux zones et construit ainsi la matrice de correspondance entre ces dernières.
+
+On peut imaginer une API du style:
+
+```java
+Calculator.setWalkingDuration(workshop1, workshop2, duration);
+```
+
+Et ensuite, il serait consommé par les clients avec une API comme:
+
+```java
+Calculator.goFrom(workshop1, workshop2);
+```
+
+Quelque chose comme ça. A voir avec les implémentations.

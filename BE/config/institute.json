@@ -1,0 +1,17 @@
+{
+  "affluence": {
+    "march": 50,
+    "april": 60,
+    "may": 70,
+    "june": 80,
+    "july": 95,
+    "august": 90,
+    "september": 65
+  },
+  "Number of workshops repartition": {
+    "3": 20,
+    "4": 35,
+    "5": 30,
+    "6": 15
+  }
+}
