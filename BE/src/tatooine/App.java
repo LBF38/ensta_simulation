@@ -14,7 +14,7 @@ public class App {
         LogicalDateTime end = new LogicalDateTime(DateTimeFrenchFormat.of(1, 2, 2024));
 
         // SimplePlan plan = new SimplePlan(2, start, end);
-        MonthPlan plan = new MonthPlan(2, start, end);
+        MonthPlan plan = new MonthPlan(1, start, end);
 
         SimplePlanMonitor planMonitor = new SimplePlanMonitor(plan);
         planMonitor.run();
