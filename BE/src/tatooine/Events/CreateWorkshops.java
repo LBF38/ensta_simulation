@@ -4,6 +4,8 @@ import engine.SimEntity;
 import engine.SimEvent;
 import enstabretagne.base.logger.Logger;
 import enstabretagne.base.time.LogicalDateTime;
+import enstabretagne.base.time.LogicalDuration;
+import tatooine.Workshop.Distances;
 import tatooine.Workshop.InitWorkshop;
 import tatooine.Workshop.Workshop;
 import tatooine.Workshop.WorkshopTime;
@@ -38,7 +40,29 @@ public class CreateWorkshops extends SimEvent {
         // TODO: add unused workshop.
         // TODO: add infinite workshop.
 
+        // Distances between each workshops
+        Distances.setWalkingDuration(InitWorkshop.WorkshopType.FILIFORMES, InitWorkshop.WorkshopType.DOUCHE, LogicalDuration.ofMinutes(1));
+        Distances.setWalkingDuration(InitWorkshop.WorkshopType.FILIFORMES, InitWorkshop.WorkshopType.BAIN, LogicalDuration.ofMinutes(2));
+        Distances.setWalkingDuration(InitWorkshop.WorkshopType.FILIFORMES, InitWorkshop.WorkshopType.VISAGE, LogicalDuration.ofMinutes(4));
+        Distances.setWalkingDuration(InitWorkshop.WorkshopType.FILIFORMES, InitWorkshop.WorkshopType.ETUVE, LogicalDuration.ofMinutes(1));
+        Distances.setWalkingDuration(InitWorkshop.WorkshopType.FILIFORMES, InitWorkshop.WorkshopType.TERRES, LogicalDuration.ofMinutes(3));
 
+        Distances.setWalkingDuration(InitWorkshop.WorkshopType.DOUCHE, InitWorkshop.WorkshopType.BAIN, LogicalDuration.ofMinutes(1));
+        Distances.setWalkingDuration(InitWorkshop.WorkshopType.DOUCHE, InitWorkshop.WorkshopType.VISAGE, LogicalDuration.ofMinutes(2));
+        Distances.setWalkingDuration(InitWorkshop.WorkshopType.DOUCHE, InitWorkshop.WorkshopType.ETUVE, LogicalDuration.ofMinutes(2));
+        Distances.setWalkingDuration(InitWorkshop.WorkshopType.DOUCHE, InitWorkshop.WorkshopType.TERRES, LogicalDuration.ofMinutes(4));
+
+        Distances.setWalkingDuration(InitWorkshop.WorkshopType.BAIN, InitWorkshop.WorkshopType.VISAGE, LogicalDuration.ofMinutes(1));
+        Distances.setWalkingDuration(InitWorkshop.WorkshopType.BAIN, InitWorkshop.WorkshopType.ETUVE, LogicalDuration.ofMinutes(3));
+        Distances.setWalkingDuration(InitWorkshop.WorkshopType.BAIN, InitWorkshop.WorkshopType.TERRES, LogicalDuration.ofMinutes(3));
+
+        Distances.setWalkingDuration(InitWorkshop.WorkshopType.VISAGE, InitWorkshop.WorkshopType.ETUVE, LogicalDuration.ofMinutes(4));
+        Distances.setWalkingDuration(InitWorkshop.WorkshopType.VISAGE, InitWorkshop.WorkshopType.TERRES, LogicalDuration.ofMinutes(2));
+
+        Distances.setWalkingDuration(InitWorkshop.WorkshopType.ETUVE, InitWorkshop.WorkshopType.TERRES, LogicalDuration.ofMinutes(2));
+
+//        Logger.Data(new Distances());
+        Distances.log();
         // TODO: idea - create the initWorkshops from a config file like:
         // var initWorkshops = InitWorkshop.fromFile("workshops.json");
         // Then, we will need to check if the config is valid and that objects are correctly created.
