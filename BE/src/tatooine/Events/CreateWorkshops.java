@@ -15,11 +15,7 @@ import tatooine.Workshop.WorkshopTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CreateWorkshops extends SimEvent {
-    public CreateWorkshops(LogicalDateTime occurrenceDate, SimEntity simEntity, SimEntity to) {
-        super(occurrenceDate, simEntity, to);
-    }
-
+public class CreateWorkshops extends SimEvent<SimEntity> {
     public CreateWorkshops(LogicalDateTime occurrenceDate, SimEntity from) {
         super(occurrenceDate, from, null);
     }

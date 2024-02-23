@@ -9,7 +9,7 @@ public abstract class Plan {
 
     protected SimEngine engine;
     //nombre de fois qu'un m�me sc�nario sera ex�cut� mais avec une graine diff�rente
-    private int replicas;
+    private final int replicas;
     /**
      * Current replica number.
      */

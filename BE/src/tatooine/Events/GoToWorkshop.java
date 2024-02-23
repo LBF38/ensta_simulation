@@ -7,7 +7,7 @@ import tatooine.Client.Client;
 import tatooine.Workshop.InitWorkshop.WorkshopType;
 import tatooine.Workshop.Workshop;
 
-public class GoToWorkshop extends SimEvent {
+public class GoToWorkshop extends SimEvent<Client> {
     private final WorkshopType workshop;
 
     public GoToWorkshop(LogicalDateTime occurrenceDate, Client client, WorkshopType workshop) {
@@ -46,8 +46,9 @@ public class GoToWorkshop extends SimEvent {
         var r = (Workshop) relaxation.get(0);
 
         if (w.getType() == this.workshop && w.canAddClient() && w.isOpen()) {
-            w.addClient((Client) this.from);
+            w.addClient(this.from);
             Logger.Information(this, "GoToWorkshop", "The client %s is added to the workshop %s's queue.".formatted(this.from.getName(), w.getType()));
+            this.from.send(new StartWorkshop(this.getOccurrenceDate(), this.from, w));
             return;
         }
 
@@ -55,6 +56,7 @@ public class GoToWorkshop extends SimEvent {
             // By default, the client goes to the relaxation workshop if the workshop is closed or full.
             Logger.Information(this, "GoToWorkshop", "The workshop %s is closed or full, the client %s goes to the relaxation workshop".formatted(this.workshop, this.from.getName()));
             r.addClient((Client) this.from);
+            // TODO: maybe try another time to add the client to his workshop
         }
     }
 }

@@ -6,9 +6,9 @@ import enstabretagne.base.logger.Logger;
 import enstabretagne.base.time.LogicalDateTime;
 import tatooine.Client.Client;
 
-public class ClientDeparture extends SimEvent {
-    public ClientDeparture(LogicalDateTime occurrenceDate, Client simEntity, SimEntity to) {
-        super(occurrenceDate, simEntity, to);
+public class ClientDeparture extends SimEvent<Client> {
+    public ClientDeparture(LogicalDateTime occurrenceDate, Client from, SimEntity to) {
+        super(occurrenceDate, from, to);
     }
 
     public ClientDeparture(LogicalDateTime occurrenceDate, Client from) {

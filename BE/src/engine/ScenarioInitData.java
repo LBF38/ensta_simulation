@@ -6,10 +6,10 @@ import enstabretagne.base.time.LogicalDateTime;
  * Initialisation data model for a scenario
  */
 public abstract class ScenarioInitData extends InitData {
-    private LogicalDateTime start;
-    private LogicalDateTime end;
-    private int seed;
-    private int replica;
+    private final LogicalDateTime start;
+    private final LogicalDateTime end;
+    private final int seed;
+    private final int replica;
 
     public ScenarioInitData(String name, LogicalDateTime start, LogicalDateTime end, int replica, int seed) {
         super(name);

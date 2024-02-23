@@ -8,7 +8,7 @@ import enstabretagne.base.time.LogicalDuration;
 import tatooine.Client.Client;
 import tatooine.Client.InitClient;
 
-public class CreateClient extends SimEvent {
+public class CreateClient extends SimEvent<SimEntity> {
     private final InitClient initClient;
 
     public CreateClient(LogicalDateTime occurrenceDate, SimEntity from, InitClient initClient) {

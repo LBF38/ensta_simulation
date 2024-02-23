@@ -2,6 +2,7 @@ package tatooine.Scenario;
 
 import engine.Scenario;
 import engine.SimEngine;
+import enstabretagne.base.time.LogicalDuration;
 import tatooine.Client.InitClient;
 import tatooine.Events.CreateClient;
 import tatooine.Events.CreateWorkshops;
@@ -32,7 +33,7 @@ public class MonthScenario extends Scenario {
     @Override
     protected void init() {
         super.init();
-        send(new RecordData(now(), this));
+        send(new RecordData(now().truncateToDays().add(LogicalDuration.ofHours(7).add(LogicalDuration.ofMinutes(15))), this));
     }
 
     private List<WorkshopType> attributedWorkshops(int i, int maxCapacity) {

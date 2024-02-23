@@ -53,8 +53,6 @@ public abstract class SimEntity {
     }
 
     public void send(SimEvent event, SimEntity to) {
-        event.from = this;
-        event.to = to;
         this.engine.addEvent(event);
     }
 
@@ -63,8 +61,6 @@ public abstract class SimEntity {
     }
 
     public void cancel(SimEvent event, SimEntity to) {
-        event.from = this;
-        event.to = to;
         this.engine.removeEvent(event);
     }
 

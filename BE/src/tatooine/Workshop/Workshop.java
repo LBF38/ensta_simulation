@@ -8,8 +8,7 @@ import enstabretagne.base.logger.ToRecord;
 import enstabretagne.base.time.LogicalDateTime;
 import enstabretagne.base.time.LogicalDuration;
 import tatooine.Client.Client;
-import tatooine.Events.CloseWorkshop;
-import tatooine.Events.OpenWorkshop;
+import tatooine.Events.*;
 import tatooine.Workshop.InitWorkshop.Frequenting;
 import tatooine.Workshop.InitWorkshop.QueueType;
 import tatooine.Workshop.InitWorkshop.WorkshopType;
@@ -48,7 +47,8 @@ public class Workshop extends SimEntity {
      */
     private final LogicalDuration failureRecovery;
     private final InitWorkshop initData;
-    private final Queue<Client> queue;
+    private final Queue<Client> queue = new LinkedList<>();
+    private final Queue<Client> currentClients = new LinkedList<>();
 
     public Workshop(SimEngine engine, InitWorkshop ini) {
         super(engine, ini);
@@ -61,7 +61,6 @@ public class Workshop extends SimEntity {
         this.initData = ini;
         // TODO: idea - rather than having everything here, it can be encapsulated inside the getters of each property.
         // => for example, getOpening() will return a LogicalDateTime object based on the ini.opening.
-        this.queue = new LinkedList<>();
     }
 
     @Override
@@ -139,13 +138,18 @@ public class Workshop extends SimEntity {
         return queue;
     }
 
+    @ToRecord(name = "currentQueueSize")
+    public int getCurrentQueueSize() {
+        return queue.size();
+    }
+
     public boolean addClient(Client client) {
-        if (queue.size() < getQueueCapacity()) {
+        if (canAddClient()) {
             Logger.Detail(this, "addClient", "Client %s added to the workshop %s queue.".formatted(client, this));
             queue.add(client);
             return true;
         }
-        Logger.Detail(this, "addClient", "Client %s could not be added to the workshop %s queue. Max capacity reached.".formatted(client, this));
+        Logger.Detail(this, "addClient", "Client %s could not be added to the workshop %s queue. Max queue reached.".formatted(client, this));
         return false;
     }
 
@@ -156,7 +160,7 @@ public class Workshop extends SimEntity {
     public Client getNextClient() {
         if (getQueueType() == QueueType.RANDOM) {
             // TODO: implement the randomized queue.
-            return queue.peek();
+            return queue.stream().toList().get(this.getEngine().getRandomGenerator().nextInt(queue.size()));
         }
         return queue.peek(); // default = ORGANIZED
     }
@@ -167,5 +171,53 @@ public class Workshop extends SimEntity {
 
     public boolean isClosed() {
         return now().compareTo(closing) >= 0;
+    }
+
+    @ToRecord(name = "currentClients")
+    public Queue<Client> getCurrentClients() {
+        return currentClients;
+    }
+
+    public void startWorkshop(Client client) {
+        if (currentClients.size() >= getCapacity()) {
+            if (!addClient(client)) {
+                Logger.Information(this, "startWorkshop", "The workshop %s is full, the client %s is not added to the queue.".formatted(this.getType(), client.getName()));
+                send(new GoToWorkshop(this.now().add(LogicalDuration.ofDay(1)), client, this.getType()));
+                return;
+            }
+            Logger.Information(this, "startWorkshop", "The workshop %s is full, the client %s waits in the queue".formatted(this.getType(), client.getName()));
+            return;
+        }
+        queue.removeIf(c -> c.equals(client));
+        if (!currentClients.contains(client)) currentClients.add(client);
+
+        Logger.Information(this, "startWorkshop", "Client %s starts the workshop %s at %s for %s".formatted(client.getName(), this.getType(), this.now(), this.getDuration()));
+        send(new EndWorkshop(this.now().add(this.getDuration()), client, this));
+    }
+
+    public void endWorkshop(Client client) {
+        if (currentClients.contains(client)) {
+            // TODO: add the efficiency to the client based on the time spent in the workshop
+            // => formula: client_efficiency = (duration - timeSpent) / duration * workshop_efficiency
+            // client.addEfficiency(getEfficiency());
+            currentClients.remove(client);
+            Logger.Information(this, "endWorkshop", "Client %s ends the workshop %s at %s".formatted(client.getName(), this.getType(), this.now()));
+        }
+    }
+
+    public void closeWorkshop() {
+        Logger.Information(this, "closeWorkshop", "Close workshop %s at %s".formatted(this.getName(), this.now()));
+        // end all current clients doing the workshop
+        currentClients.forEach(client -> this.send(new EndWorkshop(this.now(), client, this)));
+        // clear the queue and reschedule all waiting clients to the next day
+        // TODO: make this depend on the workshop type (e.g. relaxation workshop doesn't have a queue) and the frequenting type => FREE/PLANNED workshops.
+        queue.forEach(client -> this.send(new GoToWorkshop(this.opening.add(LogicalDuration.ofDay(1)), client, this.getType())));
+        queue.clear();
+    }
+
+    public void openWorkshop() {
+        Logger.Information(this, "openWorkshop", "Open workshop %s at %s".formatted(this.getName(), this.now()));
+        if (queue.isEmpty()) return;
+        queue.forEach(client -> this.send(new StartWorkshop(this.now(), client, this)));
     }
 }
