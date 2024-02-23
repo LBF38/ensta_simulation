@@ -25,6 +25,7 @@ public abstract class SimEvent implements Comparable<SimEvent> {
 
     protected LogicalDateTime rescheduleAt(LogicalDateTime newDate) {
         this.occurrenceDate = newDate;
+        this.from.getEngine().addEvent(this); // Reschedule the event.
         return this.occurrenceDate;
     }
 
