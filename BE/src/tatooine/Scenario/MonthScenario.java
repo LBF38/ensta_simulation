@@ -9,9 +9,7 @@ import tatooine.Events.CreateWorkshops;
 import tatooine.Events.RecordData;
 import tatooine.Workshop.InitWorkshop.WorkshopType;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class MonthScenario extends Scenario {
     public MonthScenario(SimEngine engine, InitMonthScenario init) {
@@ -36,7 +34,7 @@ public class MonthScenario extends Scenario {
         send(new RecordData(now().truncateToDays().add(LogicalDuration.ofHours(7).add(LogicalDuration.ofMinutes(15))), this));
     }
 
-    private List<WorkshopType> attributedWorkshops(int i, int maxCapacity) {
+    private Dictionary<WorkshopType, Integer> attributedWorkshops(int i, int maxCapacity) {
 //        var rates = List.of(0.2, 0.35, 0.3, 0.15);
         var rates = List.of(0.2, 0.55, 0.85, 1.0);
         for (int k = 0; k < rates.size(); k++) {
@@ -47,12 +45,19 @@ public class MonthScenario extends Scenario {
         return generateRandomAttributedWorkshops(3); // default value
     }
 
-    private List<WorkshopType> generateRandomAttributedWorkshops(int maxWorkshops) {
+    private Dictionary<WorkshopType, Integer> generateRandomAttributedWorkshops(int maxWorkshops) {
         var workshopsTypes = Arrays.stream(WorkshopType.values()).filter(w -> w != WorkshopType.HOME && w != WorkshopType.RELAXATION).toList();
-        List<WorkshopType> workshops = new ArrayList<>();
+        Dictionary<WorkshopType, Integer> workshops = new Hashtable<>();
         for (int j = 0; j < maxWorkshops; j++) {
             int randomIndex = this.getEngine().getRandomGenerator().nextInt(0, workshopsTypes.size());
-            workshops.add(workshopsTypes.get(randomIndex));
+            // NB : The center can handle 180 clients per day.
+            // All workshops together can handle 41 clients simultaneously (unused workshop not accounted).
+            // So, to host 180 clients and maximize the rentability, one client can get 180/41 = 22% of the day duration.
+            // The center is opened from 7:15 to 14:00, so 405 minutes a day.
+            // So each client of one day can get 405 * 0.22 = 89.1 minutes.
+            // Roughly 90 minutes.
+            // We choose that one client tries to get a uniform distribution among its workshops.
+            workshops.put(workshopsTypes.get(randomIndex), 90/maxWorkshops);
         }
         return workshops;
     }

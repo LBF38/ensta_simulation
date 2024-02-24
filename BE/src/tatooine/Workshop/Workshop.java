@@ -13,6 +13,7 @@ import tatooine.Workshop.InitWorkshop.Frequenting;
 import tatooine.Workshop.InitWorkshop.QueueType;
 import tatooine.Workshop.InitWorkshop.WorkshopType;
 
+import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -204,7 +205,9 @@ public class Workshop extends SimEntity {
             currentClients.remove(client);
             Logger.Information(this, "endWorkshop", "Client %s ends the workshop %s at %s".formatted(client.getName(), this.getType(), this.now()));
             if (!client.getAttributedWorkshops().isEmpty()) {
-                var nextWorkshopType = client.getAttributedWorkshops().remove(0);
+                // var nextWorkshopType = client.getAttributedWorkshops().remove(0);
+                Enumeration<WorkshopType> demanded_workshops = client.getAttributedWorkshops().keys();
+                var nextWorkshopType = demanded_workshops.nextElement();
                 var workshopDistance = Distances.getWalkingDuration(this.getType(), nextWorkshopType);
                 send(new GoToWorkshop(this.now().add(workshopDistance), client, nextWorkshopType));
             }
