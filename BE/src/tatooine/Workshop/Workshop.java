@@ -235,7 +235,7 @@ public class Workshop extends SimEntity {
             // TODO: add the efficiency to the client based on the time spent in the workshop
             // => formula: client_efficiency = (duration - timeSpent) / duration * workshop_efficiency
             var start = client.getStartFromWorkshop(this);
-            var client_efficiency = this.now().soustract(start).getTotalOfMinutes() / getDuration().getTotalOfMinutes() * getEfficiency();
+            var client_efficiency = this.now().subtract(start).getTotalOfMinutes() / getDuration().getTotalOfMinutes() * getEfficiency();
             client.addEfficiency(client_efficiency);
 
             currentClients.remove(client);
