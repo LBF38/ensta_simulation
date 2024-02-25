@@ -171,11 +171,11 @@ public class Workshop extends SimEntity {
 
     public boolean addClient(Client client) {
         if (canAddClient()) {
-            Logger.Detail(this, "addClient", "Client %s added to the workshop %s queue.".formatted(client, this));
+            Logger.Detail(this, "addClient", "%s added to the workshop %s queue.".formatted(client.getName(), this));
             queue.add(client);
             return true;
         }
-        Logger.Detail(this, "addClient", "Client %s could not be added to the workshop %s queue. Max queue reached.".formatted(client, this));
+        Logger.Detail(this, "addClient", "%s could not be added to the workshop %s queue. Max queue reached.".formatted(client.getName(), this));
         return false;
     }
 
@@ -224,23 +224,31 @@ public class Workshop extends SimEntity {
 
         queue.removeIf(c -> c.equals(client));
         if (!currentClients.contains(client)) currentClients.add(client);
+        client.updateHistory(now(), this);
 
-        Logger.Information(this, "startWorkshop", "Client %s starts the workshop %s at %s for %s".formatted(client.getName(), this.getType(), this.now(), this.getDuration()));
-        send(new EndWorkshop(this.now().add(this.getDuration()), client, this));
+        Logger.Information(this, "startWorkshop", "%s starts the workshop %s at %s for %s".formatted(client.getName(), this.getType(), this.now(), this.getDuration()));
+        send(new EndWorkshop(now().add(getDuration()), client, this));
     }
 
     public void endWorkshop(Client client) {
         if (currentClients.contains(client)) {
             // TODO: add the efficiency to the client based on the time spent in the workshop
             // => formula: client_efficiency = (duration - timeSpent) / duration * workshop_efficiency
-            // client.addEfficiency(getEfficiency());
+            var start = client.getStartFromWorkshop(this);
+            var client_efficiency = this.now().soustract(start).getTotalOfMinutes() / getDuration().getTotalOfMinutes() * getEfficiency();
+            client.addEfficiency(client_efficiency);
+
             currentClients.remove(client);
-            Logger.Information(this, "endWorkshop", "Client %s ends the workshop %s at %s".formatted(client.getName(), this.getType(), this.now()));
-            if (!client.getAttributedWorkshops().isEmpty()) {
-                var nextWorkshopType = client.getAttributedWorkshops().remove(0);
+            client.updateHistory(now(), this);
+
+            Logger.Information(this, "endWorkshop", "%s ends the workshop %s at %s".formatted(client.getName(), this.getType(), this.now()));
+
+            if (client.hasDailyWorkshops()) {
+                var nextWorkshopType = client.getNextWorkshop();
                 var workshopDistance = Distances.getWalkingDuration(this.getType(), nextWorkshopType);
                 send(new GoToWorkshop(this.now().add(workshopDistance), client, nextWorkshopType));
             }
+            // TODO: add an event or something for the client to come back next day as he has finished all his workshops for today.
         }
         // The next client in the queue starts the workshop
         if (getNextClient() == null) return;

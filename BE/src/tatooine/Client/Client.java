@@ -2,16 +2,26 @@ package tatooine.Client;
 
 import engine.SimEngine;
 import engine.SimEntity;
+import enstabretagne.base.logger.Logger;
 import enstabretagne.base.logger.ToRecord;
+import enstabretagne.base.time.LogicalDateTime;
 import enstabretagne.base.time.LogicalDuration;
 import tatooine.Events.GoToWorkshop;
 import tatooine.Workshop.Distances;
 import tatooine.Workshop.InitWorkshop.WorkshopType;
+import tatooine.Workshop.Workshop;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 @ToRecord(name = "Client")
 public class Client extends SimEntity {
+    private List<WorkshopType> dailyWorkshops;
+    private int currentEfficiency;
+    private Map<LogicalDateTime, ClientHistory> history = new HashMap<>();
+
     public Client(SimEngine engine, InitClient ini) {
         super(engine, ini);
     }
@@ -19,8 +29,9 @@ public class Client extends SimEntity {
     @Override
     protected void init() {
         super.init();
-        var workshop = getAttributedWorkshops().remove(0);
+        this.resetDailyWorkshops();
         var clientArrival = now().add(LogicalDuration.ofHours(7).add(LogicalDuration.ofMinutes(15)));
+        var workshop = getNextWorkshop();
         var walking = clientArrival.add(Distances.getWalkingDuration(WorkshopType.HOME, workshop));
         send(new GoToWorkshop(walking, this, workshop));
     }
@@ -30,8 +41,60 @@ public class Client extends SimEntity {
         return ((InitClient) this.getInitData()).workshops;
     }
 
+    @ToRecord(name = "NumberOfWorkshops")
+    public int getNumberOfWorkshops() {
+        return getAttributedWorkshops().size();
+    }
+
+    public WorkshopType getNextWorkshop() {
+        // TODO: implement a random choice for the next workshop
+        return dailyWorkshops.remove(0);
+    }
+
+    public boolean hasDailyWorkshops() {
+        return !dailyWorkshops.isEmpty();
+    }
+
+    public void resetDailyWorkshops() {
+        dailyWorkshops = getAttributedWorkshops();
+    }
+
+    public void updateHistory(LogicalDateTime date, Workshop workshop) {
+        var client_history = new ClientHistory(workshop, getEfficiency());
+        history.put(date, client_history);
+    }
+
+    public LogicalDateTime getStartFromWorkshop(Workshop workshop) {
+        AtomicReference<LogicalDateTime> start = new AtomicReference<>();
+        history.forEach((key, value) -> {
+            if (value.workshop() == workshop) {
+                start.set(key);
+            }
+        });
+        if (start.get() == null) {
+            Logger.Warning(this, "getStartFromWorkshop", "No start found for the workshop %s".formatted(workshop));
+            return now();
+        }
+        return start.get();
+    }
+
+    public void logHistory() {
+        Logger.DataSimple("%s's history".formatted(this.getName()), "Date", "Workshop", "Efficiency");
+        for (var entry : history.entrySet()) {
+            Logger.DataSimple("%s's history".formatted(this.getName()), entry.getKey(), entry.getValue().workshop(), entry.getValue().efficiency());
+        }
+    }
+
+    public int getEfficiency() {
+        return currentEfficiency;
+    }
+
     @ToRecord(name = "Name")
     public String getName() {
         return this.getInitData().getName();
+    }
+
+    public void addEfficiency(long clientEfficiency) {
+        this.currentEfficiency += (int) clientEfficiency;
     }
 }
