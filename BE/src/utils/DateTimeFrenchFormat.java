@@ -46,6 +46,10 @@ public class DateTimeFrenchFormat {
         return of(day, 1);
     }
 
+    public static String of(LogicalDateTime dateTime, int hours, int minutes) {
+        return of(dateTime.getDay(), dateTime.getMonth(), dateTime.getYear(), hours, minutes);
+    }
+
     public static WorkshopTime toWorkshopTime(String dateTime) {
         var split = dateTime.split(" ");
         var date = split[0].split("/");
