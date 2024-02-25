@@ -81,7 +81,8 @@ public class Workshop extends SimEntity {
         // TODO: add the failure event
         var failureFrequency = getRandomFailureFrequency();
         Logger.Detail(this, "init", "Workshop %s failure frequency: %s".formatted(this.getType(), failureFrequency));
-        send(new WorkshopFailure(this.now().add(failureFrequency), this));
+        if (getType() != WorkshopType.RELAXATION && getType() != WorkshopType.HOME)
+            send(new WorkshopFailure(this.now().add(failureFrequency), this));
         // TODO: add the next client event => see how to do this.
         send(new CloseWorkshop(this.closing, this));
     }
