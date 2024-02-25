@@ -212,20 +212,24 @@ public class Workshop extends SimEntity {
             return;
         }
         queue.removeIf(c -> c.equals(client));
-        if (!currentClients.contains(client)) currentClients.add(client);
+        if (!currentClients.contains(client)) {
+            currentClients.add(client);
+        }
         // First option : the Client ends the workshop at the end of the WORKSHOP duration.
         // Logger.Information(this, "startWorkshop", "Client %s starts the workshop %s at %s for %s".formatted(client.getName(), this.getType(), this.now(), this.getDuration()));
         // send(new EndWorkshop(this.now().add(this.getDuration()), client, this));
         // Second option : the Client ends the workshop at the end of the Client required prescription duration.
         client.setWorkshopStartingTime(this.now());
-        Logger.Information(this, "startWorkshop", "%s starts the workshop %s at %s for %s".formatted(client.getName(), this.getType(), this.now(), client.getAttributedWorkshops().get(this.getType())));
+
         // If the workshop is a relaxation or home workshop, the client ends the workshop after 15 minutes.
         if (this.getType() == WorkshopType.RELAXATION || this.getType() == WorkshopType.HOME) {
             send(new EndWorkshop(this.now().add(LogicalDuration.ofMinutes(15)), client, this));
+            Logger.Information(this, "startWorkshop", "%s starts the workshop %s at %s for %s".formatted(client.getName(), this.getType(), this.now(), LogicalDuration.ofMinutes(15)));
         }
         else {
             try {
                 send(new EndWorkshop(this.now().add(client.getAttributedWorkshops().get(this.getType())), client, this));
+                Logger.Information(this, "startWorkshop", "%s starts the workshop %s at %s for %s".formatted(client.getName(), this.getType(), this.now(), client.getAttributedWorkshops().get(this.getType())));
             } catch (Exception e) {
                 Logger.Error(this, "startWorkshop", "%s has no more workshops to do.".formatted(client.getName()));
             }
@@ -241,6 +245,7 @@ public class Workshop extends SimEntity {
             // If the client enters in Relaxation room, it means they have no more workshops to do.
             // Also, the Home room is only accessed when clients enter or leave the center.
             if (this.getType() != WorkshopType.RELAXATION && this.getType() != WorkshopType.HOME) {
+                client.markWorkshopDone(this.getType());
                 LogicalDateTime start_time = client.getWorkshopStartingTime();
                 double remaining_required_time = abs(start_time.add(client.getAttributedWorkshops().get(this.getType())).subtract(this.now()).getTotalOfMinutes());
                 double efficiency = 1 - (remaining_required_time / client.getAttributedWorkshops().get(this.getType()).getTotalOfMinutes());
@@ -248,12 +253,14 @@ public class Workshop extends SimEntity {
                 this.dailyEfficiency += efficiency;
                 this.dailyPerfectEfficiency += 1;
             }
-            if (!client.getAttributedWorkshops().isEmpty()) {
-                // var nextWorkshopType = client.getAttributedWorkshops().remove(0);
-                Enumeration<WorkshopType> demanded_workshops = client.getAttributedWorkshops().keys();
-                var nextWorkshopType = demanded_workshops.nextElement();
+            if (!client.getAttributedWorkshops().isEmpty() && !client.WorkshopsNotDone().isEmpty()) {
+                List<WorkshopType> remainingWorkshops = client.WorkshopsNotDone();
+                var nextWorkshopType = remainingWorkshops.get(this.getEngine().getRandomGenerator().nextInt(remainingWorkshops.size()));
                 var workshopDistance = Distances.getWalkingDuration(this.getType(), nextWorkshopType);
                 send(new GoToWorkshop(this.now().add(workshopDistance), client, nextWorkshopType));
+            }
+            else {
+                send(new ClientLeavingDaily(this.now(), client));
             }
         }
         // The next client in the queue starts the workshop
@@ -264,7 +271,12 @@ public class Workshop extends SimEntity {
     public void closeWorkshop() {
         // end all current clients doing the workshop
         currentClients.forEach(client -> this.send(new EndWorkshop(this.now(), client, this)));
-        Logger.Information(this, "closeWorkshop", "Close workshop %s at %s with efficiency %s over %s".formatted(this.getName(), this.now(), this.dailyEfficiency, this.dailyPerfectEfficiency));
+        if (this.getType() != WorkshopType.RELAXATION && this.getType() != WorkshopType.HOME) {
+            Logger.Information(this, "closeWorkshop", "Close workshop %s at %s with efficiency %s over %s".formatted(this.getName(), this.now(), this.dailyEfficiency, this.dailyPerfectEfficiency));
+        }
+        else {
+            Logger.Information(this, "closeWorkshop", "Close workshop %s at %s".formatted(this.getName(), this.now()));
+        }
         // clear the queue and reschedule all waiting clients to the next day
         // TODO: make this depend on the workshop type (e.g. relaxation workshop doesn't have a queue) and the frequenting type => FREE/PLANNED workshops.
         queue.forEach(client -> this.send(new GoToWorkshop(this.opening.add(LogicalDuration.ofDay(1)), client, this.getType())));
@@ -292,5 +304,18 @@ public class Workshop extends SimEntity {
         Logger.Information(this, "efficiencies", "Workshop %s has total efficiency %s".formatted(this.getName(), this.totalEfficiency));
         Logger.Information(this, "perfect efficiencies", "Workshop %s has total perfect efficiency %s".formatted(this.getName(), this.totalPerfectEfficiency));
         super.terminate();
+    }
+
+    public void increaseDailyEfficiency(double efficiency) {
+        this.dailyEfficiency += efficiency;
+    }
+
+    public void increaseDailyPerfectEfficiency() {
+        this.dailyPerfectEfficiency++;
+    }
+
+    @Override
+    public String toString() {
+        return this.getType().toString();
     }
 }

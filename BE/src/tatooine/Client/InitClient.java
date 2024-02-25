@@ -4,7 +4,9 @@ import engine.InitData;
 import enstabretagne.base.time.LogicalDuration;
 import tatooine.Workshop.InitWorkshop;
 
+import java.util.Collections;
 import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.List;
 
 public class InitClient extends InitData {
