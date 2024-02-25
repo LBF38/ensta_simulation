@@ -34,7 +34,7 @@ public class MonthScenario extends Scenario {
         send(new RecordData(now().truncateToDays().add(LogicalDuration.ofHours(7).add(LogicalDuration.ofMinutes(15))), this));
     }
 
-    private Dictionary<WorkshopType, Integer> attributedWorkshops(int i, int maxCapacity) {
+    private Dictionary<WorkshopType, LogicalDuration> attributedWorkshops(int i, int maxCapacity) {
 //        var rates = List.of(0.2, 0.35, 0.3, 0.15);
         var rates = List.of(0.2, 0.55, 0.85, 1.0);
         for (int k = 0; k < rates.size(); k++) {
@@ -45,9 +45,9 @@ public class MonthScenario extends Scenario {
         return generateRandomAttributedWorkshops(3); // default value
     }
 
-    private Dictionary<WorkshopType, Integer> generateRandomAttributedWorkshops(int maxWorkshops) {
+    private Dictionary<WorkshopType, LogicalDuration> generateRandomAttributedWorkshops(int maxWorkshops) {
         var workshopsTypes = Arrays.stream(WorkshopType.values()).filter(w -> w != WorkshopType.HOME && w != WorkshopType.RELAXATION).toList();
-        Dictionary<WorkshopType, Integer> workshops = new Hashtable<>();
+        Dictionary<WorkshopType, LogicalDuration> workshops = new Hashtable<>();
         for (int j = 0; j < maxWorkshops; j++) {
             int randomIndex = this.getEngine().getRandomGenerator().nextInt(0, workshopsTypes.size());
             // NB : The center can handle 180 clients per day.
@@ -57,7 +57,7 @@ public class MonthScenario extends Scenario {
             // So each client of one day can get 405 * 0.22 = 89.1 minutes.
             // Roughly 90 minutes.
             // We choose that one client tries to get a uniform distribution among its workshops.
-            workshops.put(workshopsTypes.get(randomIndex), 90/maxWorkshops);
+            workshops.put(workshopsTypes.get(randomIndex), LogicalDuration.ofMinutes(90/maxWorkshops));
         }
         return workshops;
     }

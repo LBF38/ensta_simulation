@@ -13,9 +13,9 @@ import tatooine.Workshop.InitWorkshop.Frequenting;
 import tatooine.Workshop.InitWorkshop.QueueType;
 import tatooine.Workshop.InitWorkshop.WorkshopType;
 
-import java.util.Enumeration;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
+
+import static java.lang.Math.abs;
 
 @ToRecord(name = "Workshop")
 public class Workshop extends SimEntity {
@@ -50,6 +50,27 @@ public class Workshop extends SimEntity {
     private final InitWorkshop initData;
     private final Queue<Client> queue = new LinkedList<>();
     private final Queue<Client> currentClients = new LinkedList<>();
+    /**
+     * The efficiency of the workshop over the simulation.
+     * Defined as the fraction of the duration a client spent in the workshop over the duration required by the client.
+     */
+    private double dailyEfficiency = 0;
+    /**
+     * The theoretical perfect efficiency of the workshop over the current day.
+     * i.e. the number of clients that could have been served perfectly.
+     */
+    private long dailyPerfectEfficiency = 0;
+    /**
+     * The efficiency of the workshop over the current day.
+     * Defined as the fraction of the duration a client spent in the workshop over the duration required by the client.
+     */
+    private List<Double> totalEfficiency = new ArrayList<>();
+    /**
+     * The theoretical perfect efficiency of the workshop over the simulation.
+     * i.e. the number of clients that could have been served perfectly over the simulation.
+     */
+    private List<Long> totalPerfectEfficiency = new ArrayList<>();
+
 
     public Workshop(SimEngine engine, InitWorkshop ini) {
         super(engine, ini);
@@ -184,6 +205,7 @@ public class Workshop extends SimEntity {
         if (currentClients.size() >= getCapacity()) {
             if (!addClient(client)) {
                 Logger.Information(this, "startWorkshop", "The workshop %s is full, the client %s is not added to the queue.".formatted(this.getType(), client.getName()));
+                client.setWorkshopStartingTime(this.now());
                 send(new GoToWorkshop(this.now().add(LogicalDuration.ofDay(1)), client, this.getType()));
                 return;
             }
@@ -192,9 +214,17 @@ public class Workshop extends SimEntity {
         }
         queue.removeIf(c -> c.equals(client));
         if (!currentClients.contains(client)) currentClients.add(client);
-
-        Logger.Information(this, "startWorkshop", "Client %s starts the workshop %s at %s for %s".formatted(client.getName(), this.getType(), this.now(), this.getDuration()));
-        send(new EndWorkshop(this.now().add(this.getDuration()), client, this));
+        // First option : the Client ends the workshop at the end of the WORKSHOP duration.
+        // Logger.Information(this, "startWorkshop", "Client %s starts the workshop %s at %s for %s".formatted(client.getName(), this.getType(), this.now(), this.getDuration()));
+        // send(new EndWorkshop(this.now().add(this.getDuration()), client, this));
+        // Second option : the Client ends the workshop at the end of the Client required prescription duration.
+        Logger.Information(this, "startWorkshop", "Client %s starts the workshop %s at %s for %s".formatted(client.getName(), this.getType(), this.now(), client.getAttributedWorkshops().get(this.getType())));
+        try {
+            send(new EndWorkshop(this.now().add(client.getAttributedWorkshops().get(this.getType())), client, this));
+        } catch (Exception e) {
+            Logger.Error(this, "startWorkshop", "Client %s has no more workshops to do.".formatted(client.getName()));
+        }
+        //send(new EndWorkshop(this.now().add(client.getAttributedWorkshops().get(this.getType())), client, this));
     }
 
     public void endWorkshop(Client client) {
@@ -203,7 +233,12 @@ public class Workshop extends SimEntity {
             // => formula: client_efficiency = (duration - timeSpent) / duration * workshop_efficiency
             // client.addEfficiency(getEfficiency());
             currentClients.remove(client);
-            Logger.Information(this, "endWorkshop", "Client %s ends the workshop %s at %s".formatted(client.getName(), this.getType(), this.now()));
+            LogicalDateTime start_time = client.getWorkshopStartingTime();
+            double required_end_time = abs(start_time.add(client.getAttributedWorkshops().get(this.getType())).soustract(this.now()).getTotalOfMinutes());
+            double efficiency = required_end_time / client.getAttributedWorkshops().get(this.getType()).getTotalOfMinutes();
+            Logger.Information(this, "endWorkshop", "Client %s ends the workshop %s at %s, with efficiency %s".formatted(client.getName(), this.getType(), this.now(), efficiency));
+            this.dailyEfficiency += efficiency;
+            this.dailyPerfectEfficiency += 1;
             if (!client.getAttributedWorkshops().isEmpty()) {
                 // var nextWorkshopType = client.getAttributedWorkshops().remove(0);
                 Enumeration<WorkshopType> demanded_workshops = client.getAttributedWorkshops().keys();
@@ -218,18 +253,33 @@ public class Workshop extends SimEntity {
     }
 
     public void closeWorkshop() {
-        Logger.Information(this, "closeWorkshop", "Close workshop %s at %s".formatted(this.getName(), this.now()));
         // end all current clients doing the workshop
         currentClients.forEach(client -> this.send(new EndWorkshop(this.now(), client, this)));
+        Logger.Information(this, "closeWorkshop", "Close workshop %s at %s with efficiency %s over %s".formatted(this.getName(), this.now(), this.dailyEfficiency, this.dailyPerfectEfficiency));
         // clear the queue and reschedule all waiting clients to the next day
         // TODO: make this depend on the workshop type (e.g. relaxation workshop doesn't have a queue) and the frequenting type => FREE/PLANNED workshops.
         queue.forEach(client -> this.send(new GoToWorkshop(this.opening.add(LogicalDuration.ofDay(1)), client, this.getType())));
         queue.clear();
+        // Reset daily efficiency
+        this.totalEfficiency.add(this.dailyEfficiency);
+        this.totalPerfectEfficiency.add(this.dailyPerfectEfficiency);
+        this.dailyEfficiency = 0;
+        this.dailyPerfectEfficiency = 0;
     }
 
     public void openWorkshop() {
         Logger.Information(this, "openWorkshop", "Open workshop %s at %s".formatted(this.getName(), this.now()));
         if (queue.isEmpty()) return;
         queue.forEach(client -> this.send(new StartWorkshop(this.now(), client, this)));
+    }
+
+    @Override
+    public void terminate() {
+        double totalEfficiency = this.totalEfficiency.stream().mapToDouble(Double::doubleValue).sum();
+        long totalPerfectEfficiency = this.totalPerfectEfficiency.stream().mapToLong(Long::longValue).sum();
+        Logger.Information(this, "terminate", "Terminate workshop %s at %s, total efficiency %s out of %s".formatted(this.getName(), this.now(), totalEfficiency, totalPerfectEfficiency));
+        Logger.Information(this, "efficiencies", "Workshop %s has total efficiency %s".formatted(this.getName(), this.totalEfficiency));
+        Logger.Information(this, "perfect efficiencies", "Workshop %s has total perfect efficiency %s".formatted(this.getName(), this.totalPerfectEfficiency));
+        super.terminate();
     }
 }
