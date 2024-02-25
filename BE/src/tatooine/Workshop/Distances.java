@@ -47,7 +47,7 @@ public class Distances {
     public static LogicalDuration getWalkingDuration(InitWorkshop.WorkshopType workshop1, InitWorkshop.WorkshopType workshop2) {
         var duration = walkingDurations.get(List.of(workshop1, workshop2));
         if (duration == null) {
-            Logger.Warning(Distances.class, "Distances - getWalkingDuration", "No duration found for the workshops %s and %s".formatted(workshop1, workshop2));
+            Logger.Warning(Distances.class, "Distances - getWalkingDuration", "No duration found for the workshops %s and %s - defaulting to 0".formatted(workshop1, workshop2));
             return LogicalDuration.ofMinutes(0);
         }
         return duration;
