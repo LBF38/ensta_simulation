@@ -167,11 +167,11 @@ public class Workshop extends SimEntity {
 
     public boolean addClient(Client client) {
         if (canAddClient()) {
-            Logger.Detail(this, "addClient", "Client %s added to the workshop %s queue.".formatted(client, this));
+            Logger.Detail(this, "addClient", "%s added to the workshop %s queue.".formatted(client, this));
             queue.add(client);
             return true;
         }
-        Logger.Detail(this, "addClient", "Client %s could not be added to the workshop %s queue. Max queue reached.".formatted(client, this));
+        Logger.Detail(this, "addClient", "%s could not be added to the workshop %s queue. Max queue reached.".formatted(client, this));
         return false;
     }
 
@@ -205,7 +205,6 @@ public class Workshop extends SimEntity {
         if (currentClients.size() >= getCapacity()) {
             if (!addClient(client)) {
                 Logger.Information(this, "startWorkshop", "The workshop %s is full, the client %s is not added to the queue.".formatted(this.getType(), client.getName()));
-                client.setWorkshopStartingTime(this.now());
                 send(new GoToWorkshop(this.now().add(LogicalDuration.ofDay(1)), client, this.getType()));
                 return;
             }
@@ -218,13 +217,19 @@ public class Workshop extends SimEntity {
         // Logger.Information(this, "startWorkshop", "Client %s starts the workshop %s at %s for %s".formatted(client.getName(), this.getType(), this.now(), this.getDuration()));
         // send(new EndWorkshop(this.now().add(this.getDuration()), client, this));
         // Second option : the Client ends the workshop at the end of the Client required prescription duration.
-        Logger.Information(this, "startWorkshop", "Client %s starts the workshop %s at %s for %s".formatted(client.getName(), this.getType(), this.now(), client.getAttributedWorkshops().get(this.getType())));
-        try {
-            send(new EndWorkshop(this.now().add(client.getAttributedWorkshops().get(this.getType())), client, this));
-        } catch (Exception e) {
-            Logger.Error(this, "startWorkshop", "Client %s has no more workshops to do.".formatted(client.getName()));
+        client.setWorkshopStartingTime(this.now());
+        Logger.Information(this, "startWorkshop", "%s starts the workshop %s at %s for %s".formatted(client.getName(), this.getType(), this.now(), client.getAttributedWorkshops().get(this.getType())));
+        // If the workshop is a relaxation or home workshop, the client ends the workshop after 15 minutes.
+        if (this.getType() == WorkshopType.RELAXATION || this.getType() == WorkshopType.HOME) {
+            send(new EndWorkshop(this.now().add(LogicalDuration.ofMinutes(15)), client, this));
         }
-        //send(new EndWorkshop(this.now().add(client.getAttributedWorkshops().get(this.getType())), client, this));
+        else {
+            try {
+                send(new EndWorkshop(this.now().add(client.getAttributedWorkshops().get(this.getType())), client, this));
+            } catch (Exception e) {
+                Logger.Error(this, "startWorkshop", "%s has no more workshops to do.".formatted(client.getName()));
+            }
+        }
     }
 
     public void endWorkshop(Client client) {
@@ -233,12 +238,16 @@ public class Workshop extends SimEntity {
             // => formula: client_efficiency = (duration - timeSpent) / duration * workshop_efficiency
             // client.addEfficiency(getEfficiency());
             currentClients.remove(client);
-            LogicalDateTime start_time = client.getWorkshopStartingTime();
-            double required_end_time = abs(start_time.add(client.getAttributedWorkshops().get(this.getType())).soustract(this.now()).getTotalOfMinutes());
-            double efficiency = required_end_time / client.getAttributedWorkshops().get(this.getType()).getTotalOfMinutes();
-            Logger.Information(this, "endWorkshop", "Client %s ends the workshop %s at %s, with efficiency %s".formatted(client.getName(), this.getType(), this.now(), efficiency));
-            this.dailyEfficiency += efficiency;
-            this.dailyPerfectEfficiency += 1;
+            // If the client enters in Relaxation room, it means they have no more workshops to do.
+            // Also, the Home room is only accessed when clients enter or leave the center.
+            if (this.getType() != WorkshopType.RELAXATION && this.getType() != WorkshopType.HOME) {
+                LogicalDateTime start_time = client.getWorkshopStartingTime();
+                double remaining_required_time = abs(start_time.add(client.getAttributedWorkshops().get(this.getType())).subtract(this.now()).getTotalOfMinutes());
+                double efficiency = 1 - (remaining_required_time / client.getAttributedWorkshops().get(this.getType()).getTotalOfMinutes());
+                Logger.Information(this, "endWorkshop", "%s ends the workshop %s at %s, with efficiency %s".formatted(client.getName(), this.getType(), this.now(), efficiency));
+                this.dailyEfficiency += efficiency;
+                this.dailyPerfectEfficiency += 1;
+            }
             if (!client.getAttributedWorkshops().isEmpty()) {
                 // var nextWorkshopType = client.getAttributedWorkshops().remove(0);
                 Enumeration<WorkshopType> demanded_workshops = client.getAttributedWorkshops().keys();
@@ -261,10 +270,12 @@ public class Workshop extends SimEntity {
         queue.forEach(client -> this.send(new GoToWorkshop(this.opening.add(LogicalDuration.ofDay(1)), client, this.getType())));
         queue.clear();
         // Reset daily efficiency
-        this.totalEfficiency.add(this.dailyEfficiency);
-        this.totalPerfectEfficiency.add(this.dailyPerfectEfficiency);
-        this.dailyEfficiency = 0;
-        this.dailyPerfectEfficiency = 0;
+        if (this.getType() != WorkshopType.RELAXATION && this.getType() != WorkshopType.HOME) {
+            this.totalEfficiency.add(this.dailyEfficiency);
+            this.totalPerfectEfficiency.add(this.dailyPerfectEfficiency);
+            this.dailyEfficiency = 0;
+            this.dailyPerfectEfficiency = 0;
+        }
     }
 
     public void openWorkshop() {
