@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class SimEngine implements ISimulationDateProvider, IScenarioIdProvider {
-    private final SortedList<SimEvent> scheduler = new SortedList<>();
+    private final SortedList<SimEvent<SimEntity>> scheduler = new SortedList<>();
     protected List<SimEntity> simulatedEntities = new ArrayList<>();
     Scenario currentScenario;
     private LogicalDateTime start;
@@ -54,11 +54,15 @@ public class SimEngine implements ISimulationDateProvider, IScenarioIdProvider {
         this.simulatedEntities.add(simEntity);
     }
 
-    protected void addEvent(SimEvent event) {
+    public void removeEntity(SimEntity simEntity) {
+        this.simulatedEntities.remove(simEntity);
+    }
+
+    protected void addEvent(SimEvent<SimEntity> event) {
         this.scheduler.add(event);
     }
 
-    protected void removeEvent(SimEvent event) {
+    protected void removeEvent(SimEvent<SimEntity> event) {
         this.scheduler.remove(event);
     }
 
@@ -91,15 +95,15 @@ public class SimEngine implements ISimulationDateProvider, IScenarioIdProvider {
     }
 
     public void simulate() {
-        Logger.Information(this, "simulate", "current = " + this.current);
+        Logger.Detail(this, "simulate", "current = " + this.current);
         while (hasNextEvent()) {
-            Logger.Information(this, "simulate", "events.size() = " + this.scheduler.size());
-            SimEvent event = this.scheduler.first();
+            Logger.Detail(this, "simulate", "events.size() = " + this.scheduler.size());
+            SimEvent<SimEntity> event = this.scheduler.first();
             this.scheduler.remove(event);
             current = event.getOccurrenceDate();
-            Logger.Information(this, "simulate", "event = " + event);
+            Logger.Detail(this, "simulate", "event = " + event);
             event.process();
-            Logger.Information(this, "simulate", "currentDate = " + this.current);
+            Logger.Detail(this, "simulate", "currentDate = " + this.current);
         }
     }
 
@@ -127,13 +131,13 @@ public class SimEngine implements ISimulationDateProvider, IScenarioIdProvider {
     }
 
     private boolean hasNextEvent() {
-        for (SimEvent e : scheduler) {
+        for (SimEvent<SimEntity> e : scheduler) {
             if (e.getOccurrenceDate().compareTo(end) <= 0) {
-                Logger.Information(this, "hasNextEvent", "true");
+                Logger.Detail(this, "hasNextEvent", "true");
                 return true;
             }
         }
-        Logger.Information(this, "hasNextEvent", "false");
+        Logger.Detail(this, "hasNextEvent", "false");
         return false;
     }
 

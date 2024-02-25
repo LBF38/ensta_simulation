@@ -1,5 +1,6 @@
 package engine;
 
+import enstabretagne.base.logger.ToRecord;
 import enstabretagne.base.time.LogicalDateTime;
 
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.function.Predicate;
  * Entité simulée.
  * A des propriétés et doit être initialisée.
  */
+@ToRecord(name = "SimEntity")
 public abstract class SimEntity {
     private final InitData initData;
     private final SimEngine engine;
@@ -24,7 +26,8 @@ public abstract class SimEntity {
     /**
      * @return the state of the entity
      */
-    protected EntityState getState() {
+    @ToRecord(name = "state")
+    public EntityState getState() {
         return state;
     }
 
@@ -32,6 +35,7 @@ public abstract class SimEntity {
         return engine;
     }
 
+    @ToRecord(name = "name")
     public String getName() {
         return initData.getName();
     }
@@ -49,8 +53,6 @@ public abstract class SimEntity {
     }
 
     public void send(SimEvent event, SimEntity to) {
-        event.from = this;
-        event.to = to;
         this.engine.addEvent(event);
     }
 
@@ -59,8 +61,6 @@ public abstract class SimEntity {
     }
 
     public void cancel(SimEvent event, SimEntity to) {
-        event.from = this;
-        event.to = to;
         this.engine.removeEvent(event);
     }
 

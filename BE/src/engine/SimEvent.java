@@ -6,14 +6,14 @@ import enstabretagne.base.time.LogicalDateTime;
  * Evénement simulé.
  * A une date d'occurrence et est associé à une entité simulée.
  */
-public abstract class SimEvent implements Comparable<SimEvent> {
-    protected SimEntity from;
+public abstract class SimEvent<From extends SimEntity> implements Comparable<SimEvent<From>> {
+    protected From from;
     protected SimEntity to;
     private LogicalDateTime occurrenceDate;
 
-    public SimEvent(LogicalDateTime occurrenceDate, SimEntity simEntity, SimEntity to) {
+    public SimEvent(LogicalDateTime occurrenceDate, From from, SimEntity to) {
         this.occurrenceDate = occurrenceDate;
-        this.from = simEntity;
+        this.from = from;
         this.to = to;
     }
 
@@ -23,9 +23,9 @@ public abstract class SimEvent implements Comparable<SimEvent> {
         return this.occurrenceDate;
     }
 
-    protected LogicalDateTime rescheduleAt(LogicalDateTime newDate) {
+    protected void rescheduleAt(LogicalDateTime newDate) {
         this.occurrenceDate = newDate;
-        return this.occurrenceDate;
+        this.from.getEngine().addEvent((SimEvent<SimEntity>) this); // Reschedule the event.
     }
 
     @Override
