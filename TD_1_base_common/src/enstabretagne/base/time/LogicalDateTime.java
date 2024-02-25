@@ -119,12 +119,12 @@ public class LogicalDateTime implements Comparable<LogicalDateTime> {
     }
 
     /**
-     * Soustract.
+     * Subtract.
      *
      * @param d the d
      * @return the logical duration
      */
-    public LogicalDuration soustract(LogicalDateTime d) {
+    public LogicalDuration subtract(LogicalDateTime d) {
         return LogicalDuration.soustract(this, d);
     }
 
