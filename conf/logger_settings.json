@@ -33,6 +33,7 @@
         "Warning",
         "Error",
         "Fatal",
+        "Detail",
         "Data",
         "DataSimple",
         "DataRecordable"

@@ -68,9 +68,23 @@ public class Workshop extends SimEntity {
         super.init();
         send(new OpenWorkshop(this.opening, this));
         // TODO: add the failure event
+        var failureFrequency = getRandomFailureFrequency();
+        Logger.Detail(this, "init", "Workshop %s failure frequency: %s".formatted(this.getType(), failureFrequency));
+        send(new WorkshopFailure(this.now().add(failureFrequency), this));
         // TODO: add the next client event => see how to do this.
         send(new CloseWorkshop(this.closing, this));
-//        send(new WorkshopFailure(this.failureFrequency, this));
+    }
+
+    /**
+     * Get the random failure frequency based on the failure frequency and the standard deviation
+     *
+     * @return the random failure frequency
+     */
+    private LogicalDuration getRandomFailureFrequency() {
+        double mean = getFailureFrequency().DoubleValue();
+        double stdDev = getFailureStandardDeviation().DoubleValue();
+        double nextFailure = this.getEngine().getRandomGenerator().nextGaussian(mean, stdDev);
+        return LogicalDuration.ofSeconds(nextFailure);
     }
 
     @ToRecord(name = "type")
@@ -228,5 +242,30 @@ public class Workshop extends SimEntity {
         Logger.Information(this, "openWorkshop", "Open workshop %s at %s".formatted(this.getName(), this.now()));
         if (queue.isEmpty()) return;
         queue.forEach(client -> this.send(new StartWorkshop(this.now(), client, this)));
+    }
+
+    /**
+     * Start the failure of this workshop.
+     * The workshop will be closed for the duration of the failure recovery.
+     */
+    public void startFailure() {
+        if (getType() == WorkshopType.RELAXATION || getType() == WorkshopType.HOME)
+            return; // these workshops can't fail (it's infinite)
+        Logger.Information(this, "startFailure", "Workshop %s failure at %s".formatted(this.getName(), this.now()));
+        // close the workshop
+        currentClients.forEach(client -> this.send(new EndWorkshop(this.now(), client, this)));
+        queue.forEach(client -> this.send(new GoToWorkshop(this.now().add(getFailureRecovery()), client, this.getType())));
+        queue.clear();
+        // schedule the recovery
+        send(new RecoveringWorkshop(this.now().add(getFailureRecovery()), this));
+    }
+
+    /**
+     * Recover the failure of this workshop.
+     * The workshop will be opened again.
+     */
+    public void recoverFailure() {
+        Logger.Information(this, "recoverFailure", "Workshop %s recovered at %s".formatted(this.getName(), this.now()));
+        openWorkshop();
     }
 }
