@@ -23,7 +23,7 @@ public class ClientLeavingDaily extends SimEvent<Client> {
         Logger.Information(this, "ClientLeavingDaily",  this.from + " left center at " + this.getOccurrenceDate());
         List<InitWorkshop.WorkshopType> remainingWorkshops = this.from.WorkshopsNotDone();
         remainingWorkshops.forEach(workshopType -> {
-            Workshop workshop = (Workshop) this.from.getEngine().search(e -> e instanceof Workshop && ((Workshop) e).getType() == workshopType).getFirst();
+            Workshop workshop = (Workshop) this.from.getEngine().search(e -> e instanceof Workshop && ((Workshop) e).getType() == workshopType).get(0);
             workshop.increaseDailyPerfectEfficiency();
         });
         this.from.resetWorkshops();

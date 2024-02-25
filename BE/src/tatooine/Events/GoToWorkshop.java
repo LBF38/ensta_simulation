@@ -42,8 +42,8 @@ public class GoToWorkshop extends SimEvent<Client> {
             return;
         }
 
-        var w = (Workshop) workshop.getFirst();
-        var r = (Workshop) relaxation.getFirst();
+        var w = (Workshop) workshop.get(0);
+        var r = (Workshop) relaxation.get(0);
 
         if (w.getType() == this.workshop && w.canAddClient() && w.isOpen()) {
             w.addClient(this.from);
