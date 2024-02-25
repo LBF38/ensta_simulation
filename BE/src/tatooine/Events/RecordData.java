@@ -17,7 +17,7 @@ public class RecordData extends SimEvent<SimEntity> {
     @Override
     public void process() {
         Logger.Information(this, "RecordData", "Data recorded at " + this.getOccurrenceDate());
-        this.from.getEngine().search(e -> e instanceof Client).forEach(Logger::Data);
+//        this.from.getEngine().search(e -> e instanceof Client).forEach(Logger::Data);
         this.from.getEngine().search(e -> e instanceof Workshop).forEach(Logger::Data);
         if (!inOpenHours()) {
             var newDate = this.getOccurrenceDate().add(LogicalDuration.ofDay(1)).truncateToDays().add(LogicalDuration.ofHours(7).add(LogicalDuration.ofMinutes(15)));
