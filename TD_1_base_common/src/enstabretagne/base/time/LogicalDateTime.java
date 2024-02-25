@@ -79,7 +79,6 @@ public class LogicalDateTime implements Comparable<LogicalDateTime> {
      */
     boolean isDefined = true;
 
-
     /**
      * Instantiates a new logical date time.
      *
@@ -93,7 +92,8 @@ public class LogicalDateTime implements Comparable<LogicalDateTime> {
     /**
      * Instantiates a new logical date time.
      *
-     * @param dateTimeFrenchFormat the date time french format (ISO = JJ/MM/AAAA HH:MM:SS.SSSSSSS)
+     * @param dateTimeFrenchFormat the date time french format (ISO = JJ/MM/AAAA
+     *                             HH:MM:SS.SSSSSSS)
      */
     public LogicalDateTime(String dateTimeFrenchFormat) {
         logicalDate = LocalDateTime.parse(dateTimeFrenchFormat, logicalDateTimeFormatter);
@@ -108,7 +108,7 @@ public class LogicalDateTime implements Comparable<LogicalDateTime> {
         logicalDate = ldt;
     }
 
-    //Date logique de l'instant r�el courant
+    // Date logique de l'instant r�el courant
     public static LogicalDateTime Now() {
         return new LogicalDateTime(LogicalDateTime.logicalDateTimeFormatter.format(LocalDateTime.now()));
     }
@@ -152,6 +152,69 @@ public class LogicalDateTime implements Comparable<LogicalDateTime> {
             return false;
 
         }
+    }
+
+    /**
+     * Get the day
+     *
+     * @return the day
+     */
+    public int getDay() {
+        return logicalDate.getDayOfMonth();
+    }
+
+    /**
+     * Get the month
+     *
+     * @return the month
+     */
+    public int getMonth() {
+        return logicalDate.getMonthValue();
+    }
+
+    /**
+     * Get the year
+     *
+     * @return the year
+     */
+    public int getYear() {
+        return logicalDate.getYear();
+    }
+
+    /**
+     * Gets the hour.
+     *
+     * @return the hour
+     */
+    public int getHour() {
+        return logicalDate.getHour();
+    }
+
+    /**
+     * Gets the minute.
+     *
+     * @return the minute
+     */
+    public int getMinute() {
+        return logicalDate.getMinute();
+    }
+
+    /**
+     * Gets the second.
+     *
+     * @return the second
+     */
+    public int getSecond() {
+        return logicalDate.getSecond();
+    }
+
+    /**
+     * Gets the nano.
+     *
+     * @return the nano
+     */
+    public int getNano() {
+        return logicalDate.getNano();
     }
 
     /**
@@ -236,7 +299,9 @@ public class LogicalDateTime implements Comparable<LogicalDateTime> {
         return logicalDate.getMonthValue();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     *
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     @Override
@@ -244,7 +309,9 @@ public class LogicalDateTime implements Comparable<LogicalDateTime> {
         return logicalDate.compareTo(o.logicalDate);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     *
      * @see java.lang.Object#toString()
      */
     @Override
@@ -261,4 +328,3 @@ public class LogicalDateTime implements Comparable<LogicalDateTime> {
         return new LogicalDateTime(logicalDate);
     }
 }
-
