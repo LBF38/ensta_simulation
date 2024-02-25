@@ -17,7 +17,7 @@ public class StartWorkshop extends SimEvent<Client> {
     @Override
     public void process() {
         // Client starts the workshop
-        Logger.Detail(this, "StartWorkshop", "%s starts the workshop %s at %s".formatted(this.from.getName(), this.workshop.getType(), this.getOccurrenceDate()));
+        Logger.Detail(this, "StartWorkshop", "Client %s starts the workshop %s at %s".formatted(this.from.getName(), this.workshop.getType(), this.getOccurrenceDate()));
         workshop.startWorkshop(this.from);
     }
 }

@@ -40,48 +40,26 @@ public class CreateWorkshops extends SimEvent<SimEntity> {
         // TODO: add unused workshop.
         // TODO: add infinite workshop.
 
-        // Distance between workshops
-        Distances.setWalkingDuration(WorkshopType.FILIFORMES, WorkshopType.FILIFORMES, LogicalDuration.ofMinutes(0));
+        // Distances between each workshops
         Distances.setWalkingDuration(WorkshopType.FILIFORMES, WorkshopType.DOUCHE, LogicalDuration.ofMinutes(1));
         Distances.setWalkingDuration(WorkshopType.FILIFORMES, WorkshopType.BAIN, LogicalDuration.ofMinutes(2));
         Distances.setWalkingDuration(WorkshopType.FILIFORMES, WorkshopType.VISAGE, LogicalDuration.ofMinutes(4));
         Distances.setWalkingDuration(WorkshopType.FILIFORMES, WorkshopType.ETUVE, LogicalDuration.ofMinutes(1));
         Distances.setWalkingDuration(WorkshopType.FILIFORMES, WorkshopType.TERRES, LogicalDuration.ofMinutes(3));
 
-        Distances.setWalkingDuration(WorkshopType.DOUCHE, WorkshopType.FILIFORMES, LogicalDuration.ofMinutes(1));
-        Distances.setWalkingDuration(WorkshopType.DOUCHE, WorkshopType.DOUCHE, LogicalDuration.ofMinutes(0));
         Distances.setWalkingDuration(WorkshopType.DOUCHE, WorkshopType.BAIN, LogicalDuration.ofMinutes(1));
         Distances.setWalkingDuration(WorkshopType.DOUCHE, WorkshopType.VISAGE, LogicalDuration.ofMinutes(2));
         Distances.setWalkingDuration(WorkshopType.DOUCHE, WorkshopType.ETUVE, LogicalDuration.ofMinutes(2));
         Distances.setWalkingDuration(WorkshopType.DOUCHE, WorkshopType.TERRES, LogicalDuration.ofMinutes(4));
 
-        Distances.setWalkingDuration(WorkshopType.BAIN, WorkshopType.FILIFORMES, LogicalDuration.ofMinutes(2));
-        Distances.setWalkingDuration(WorkshopType.BAIN, WorkshopType.DOUCHE, LogicalDuration.ofMinutes(1));
-        Distances.setWalkingDuration(WorkshopType.BAIN, WorkshopType.BAIN, LogicalDuration.ofMinutes(0));
         Distances.setWalkingDuration(WorkshopType.BAIN, WorkshopType.VISAGE, LogicalDuration.ofMinutes(1));
         Distances.setWalkingDuration(WorkshopType.BAIN, WorkshopType.ETUVE, LogicalDuration.ofMinutes(3));
         Distances.setWalkingDuration(WorkshopType.BAIN, WorkshopType.TERRES, LogicalDuration.ofMinutes(3));
 
-        Distances.setWalkingDuration(WorkshopType.VISAGE, WorkshopType.FILIFORMES, LogicalDuration.ofMinutes(4));
-        Distances.setWalkingDuration(WorkshopType.VISAGE, WorkshopType.DOUCHE, LogicalDuration.ofMinutes(2));
-        Distances.setWalkingDuration(WorkshopType.VISAGE, WorkshopType.BAIN, LogicalDuration.ofMinutes(1));
-        Distances.setWalkingDuration(WorkshopType.VISAGE, WorkshopType.VISAGE, LogicalDuration.ofMinutes(0));
         Distances.setWalkingDuration(WorkshopType.VISAGE, WorkshopType.ETUVE, LogicalDuration.ofMinutes(4));
         Distances.setWalkingDuration(WorkshopType.VISAGE, WorkshopType.TERRES, LogicalDuration.ofMinutes(2));
 
-        Distances.setWalkingDuration(WorkshopType.ETUVE, WorkshopType.FILIFORMES, LogicalDuration.ofMinutes(1));
-        Distances.setWalkingDuration(WorkshopType.ETUVE, WorkshopType.DOUCHE, LogicalDuration.ofMinutes(2));
-        Distances.setWalkingDuration(WorkshopType.ETUVE, WorkshopType.BAIN, LogicalDuration.ofMinutes(3));
-        Distances.setWalkingDuration(WorkshopType.ETUVE, WorkshopType.VISAGE, LogicalDuration.ofMinutes(4));
-        Distances.setWalkingDuration(WorkshopType.ETUVE, WorkshopType.ETUVE, LogicalDuration.ofMinutes(0));
         Distances.setWalkingDuration(WorkshopType.ETUVE, WorkshopType.TERRES, LogicalDuration.ofMinutes(2));
-
-        Distances.setWalkingDuration(WorkshopType.TERRES, WorkshopType.FILIFORMES, LogicalDuration.ofMinutes(3));
-        Distances.setWalkingDuration(WorkshopType.TERRES, WorkshopType.DOUCHE, LogicalDuration.ofMinutes(4));
-        Distances.setWalkingDuration(WorkshopType.TERRES, WorkshopType.BAIN, LogicalDuration.ofMinutes(3));
-        Distances.setWalkingDuration(WorkshopType.TERRES, WorkshopType.VISAGE, LogicalDuration.ofMinutes(2));
-        Distances.setWalkingDuration(WorkshopType.TERRES, WorkshopType.ETUVE, LogicalDuration.ofMinutes(2));
-        Distances.setWalkingDuration(WorkshopType.TERRES, WorkshopType.TERRES, LogicalDuration.ofMinutes(0));
 
 //        Logger.Data(new Distances());
         Distances.log();

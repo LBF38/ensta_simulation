@@ -26,7 +26,7 @@ public class MonthPlan extends Plan {
     public void initScenarii() {
         var affluence = new MonthlyAffluence(new LogicalDateTime(DateTimeFrenchFormat.of(1, 1, 2024)), 0.5);
         for (int i = 0; i < getReplicas(); i++) {
-            scenarios.add(new MonthScenario(getEngine(), new InitMonthScenario("Month Scenario", start, end, i, 2, affluence, 2)));
+            scenarios.add(new MonthScenario(getEngine(), new InitMonthScenario("Month Scenario", start, end, i, 2, affluence, 180)));
         }
     }
 
