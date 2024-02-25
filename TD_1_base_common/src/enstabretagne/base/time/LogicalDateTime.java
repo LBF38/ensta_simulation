@@ -184,6 +184,7 @@ public class LogicalDateTime implements Comparable<LogicalDateTime> {
         return new LogicalDateTime(logicalDate.truncatedTo(ChronoUnit.DAYS));
     }
 
+
     /**
      * Truncate to hours.
      *
@@ -209,6 +210,9 @@ public class LogicalDateTime implements Comparable<LogicalDateTime> {
      */
     public DayOfWeek getDayOfWeek() {
         return logicalDate.getDayOfWeek();
+    }
+    public int getMonthValue() {
+        return logicalDate.getMonthValue();
     }
 
     /* (non-Javadoc)
