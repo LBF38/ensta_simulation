@@ -15,6 +15,10 @@ public class CloseWorkshop extends SimEvent<Workshop> {
     public void process() {
         Logger.Information(this, "CloseWorkshop Event process", "Close workshop %s at %s".formatted(this.from.getName(), this.getOccurrenceDate()));
         // TODO: make all current clients leave the workshop.
+        if (this.from.isFailure()) {
+            Logger.Information(this, "CloseWorkshop Event process", "Workshop %s is in failure, please wait workshop recovery".formatted(this.from.getName()));
+            return;
+        }
         this.from.closeWorkshop();
         this.rescheduleAt(this.getOccurrenceDate().add(LogicalDuration.ofDay(1)));
     }

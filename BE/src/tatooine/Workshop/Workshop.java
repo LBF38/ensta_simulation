@@ -12,6 +12,7 @@ import tatooine.Events.*;
 import tatooine.Workshop.InitWorkshop.Frequenting;
 import tatooine.Workshop.InitWorkshop.QueueType;
 import tatooine.Workshop.InitWorkshop.WorkshopType;
+import utils.DateTimeFrenchFormat;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -49,6 +50,7 @@ public class Workshop extends SimEntity {
     private final InitWorkshop initData;
     private final Queue<Client> queue = new LinkedList<>();
     private final Queue<Client> currentClients = new LinkedList<>();
+    private WorkshopState workshopState = WorkshopState.NONE;
 
     public Workshop(SimEngine engine, InitWorkshop ini) {
         super(engine, ini);
@@ -61,6 +63,15 @@ public class Workshop extends SimEntity {
         this.initData = ini;
         // TODO: idea - rather than having everything here, it can be encapsulated inside the getters of each property.
         // => for example, getOpening() will return a LogicalDateTime object based on the ini.opening.
+    }
+
+    @ToRecord(name = "workshop state")
+    public WorkshopState getWorkshopState() {
+        return workshopState;
+    }
+
+    public void setWorkshopState(WorkshopState state) {
+        this.workshopState = state;
     }
 
     @Override
@@ -194,6 +205,12 @@ public class Workshop extends SimEntity {
     }
 
     public void startWorkshop(Client client) {
+        if (getWorkshopState() == WorkshopState.FAILURE) {
+            Logger.Information(this, "startWorkshop", "The workshop %s is in failure, the client %s is not added to the queue.".formatted(this.getType(), client.getName()));
+            send(new GoToWorkshop(this.now().add(LogicalDuration.ofDay(1)), client, this.getType()));
+            return;
+        }
+
         if (currentClients.size() >= getCapacity()) {
             if (!addClient(client)) {
                 Logger.Information(this, "startWorkshop", "The workshop %s is full, the client %s is not added to the queue.".formatted(this.getType(), client.getName()));
@@ -203,6 +220,7 @@ public class Workshop extends SimEntity {
             Logger.Information(this, "startWorkshop", "The workshop %s is full, the client %s waits in the queue".formatted(this.getType(), client.getName()));
             return;
         }
+
         queue.removeIf(c -> c.equals(client));
         if (!currentClients.contains(client)) currentClients.add(client);
 
@@ -230,6 +248,8 @@ public class Workshop extends SimEntity {
 
     public void closeWorkshop() {
         Logger.Information(this, "closeWorkshop", "Close workshop %s at %s".formatted(this.getName(), this.now()));
+        // update workshop state
+        this.setWorkshopState(WorkshopState.CLOSED);
         // end all current clients doing the workshop
         currentClients.forEach(client -> this.send(new EndWorkshop(this.now(), client, this)));
         // clear the queue and reschedule all waiting clients to the next day
@@ -238,8 +258,20 @@ public class Workshop extends SimEntity {
         queue.clear();
     }
 
+    public boolean isFailure() {
+        return getWorkshopState() == WorkshopState.FAILURE;
+    }
+
+    public boolean isRecovering() {
+        return getWorkshopState() == WorkshopState.RECOVERING;
+    }
+
     public void openWorkshop() {
         Logger.Information(this, "openWorkshop", "Open workshop %s at %s".formatted(this.getName(), this.now()));
+        // update workshop state
+        if (getWorkshopState() == WorkshopState.FAILURE) return;
+        this.setWorkshopState(WorkshopState.OPEN);
+        // start the workshop for the clients in the queue
         if (queue.isEmpty()) return;
         queue.forEach(client -> this.send(new StartWorkshop(this.now(), client, this)));
     }
@@ -251,11 +283,17 @@ public class Workshop extends SimEntity {
     public void startFailure() {
         if (getType() == WorkshopType.RELAXATION || getType() == WorkshopType.HOME)
             return; // these workshops can't fail (it's infinite)
+
         Logger.Information(this, "startFailure", "Workshop %s failure at %s".formatted(this.getName(), this.now()));
+
+        // update workshop state
+        this.setWorkshopState(WorkshopState.FAILURE);
+
         // close the workshop
         currentClients.forEach(client -> this.send(new EndWorkshop(this.now(), client, this)));
         queue.forEach(client -> this.send(new GoToWorkshop(this.now().add(getFailureRecovery()), client, this.getType())));
         queue.clear();
+
         // schedule the recovery
         send(new RecoveringWorkshop(this.now().add(getFailureRecovery()), this));
     }
@@ -266,6 +304,15 @@ public class Workshop extends SimEntity {
      */
     public void recoverFailure() {
         Logger.Information(this, "recoverFailure", "Workshop %s recovered at %s".formatted(this.getName(), this.now()));
-        openWorkshop();
+
+        // update workshop state
+        this.setWorkshopState(WorkshopState.RECOVERING);
+
+        // reschedule the opening and closing of the workshop
+        var nextOpening = new LogicalDateTime(DateTimeFrenchFormat.of(this.now().add(LogicalDuration.ofDay(1)).truncateToDays(), getOpening().getHour(), getOpening().getMinute()));
+        var nextClosing = new LogicalDateTime(DateTimeFrenchFormat.of(this.now().add(LogicalDuration.ofDay(1)).truncateToDays(), getClosing().getHour(), getClosing().getMinute()));
+
+        send(new OpenWorkshop(nextOpening, this));
+        send(new CloseWorkshop(nextClosing, this));
     }
 }
