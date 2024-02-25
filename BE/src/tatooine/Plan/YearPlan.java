@@ -3,7 +3,8 @@ package tatooine.Plan;
 import engine.Plan;
 import engine.Scenario;
 import enstabretagne.base.time.LogicalDateTime;
-import tatooine.Scenario.*;
+import tatooine.Scenario.InitYearScenario;
+import tatooine.Scenario.YearScenario;
 
 import java.util.LinkedList;
 import java.util.Map;

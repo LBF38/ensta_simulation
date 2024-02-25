@@ -24,20 +24,38 @@ import java.time.temporal.ChronoUnit;
  */
 public class LogicalDateTime implements Comparable<LogicalDateTime> {
 
-    /** The Constant wellFormedDateSample. */
+    /**
+     * The Constant wellFormedDateSample.
+     */
     public final static String wellFormedDateSample = "01/09/2014 06:03:37.120'";
-
-    /** The logical date. */
-    LocalDateTime logicalDate;
-
-    /** The Constant logicalDateTimeFormatter. */
+    /**
+     * The Constant logicalDateTimeFormatter.
+     */
     public static final DateTimeFormatter logicalDateTimeFormatter;
-
-    /** The Constant logicalTimeFormatter. */
+    /**
+     * The Constant logicalTimeFormatter.
+     */
     public static final DateTimeFormatter logicalTimeFormatter;
-
-    /** The Constant logicalDateFormatter. */
+    /**
+     * The Constant logicalDateFormatter.
+     */
     public static final DateTimeFormatter logicalDateFormatter;
+    /**
+     * The Constant Zero.
+     */
+    public static final LogicalDateTime Zero = new LogicalDateTime(Settings.timeOrigin());
+    /**
+     * The Constant MaxValue.
+     */
+    public static final LogicalDateTime MaxValue = new LogicalDateTime(LocalDateTime.MAX);
+    /**
+     * The Constant MinValue.
+     */
+    public static final LogicalDateTime MinValue = new LogicalDateTime(LocalDateTime.MIN);
+    /**
+     * The Constant UNDEFINED.
+     */
+    public static final LogicalDateTime UNDEFINED = new LogicalDateTime(false);
 
     static {
         logicalTimeFormatter = DateTimeFormatter.ISO_TIME;
@@ -52,26 +70,15 @@ public class LogicalDateTime implements Comparable<LogicalDateTime> {
 
     }
 
-    /** The Constant Zero. */
-    public static final LogicalDateTime Zero = new LogicalDateTime(Settings.timeOrigin());
-
-    //Date logique de l'instant r�el courant
-    public static LogicalDateTime Now() {
-        return new LogicalDateTime(LogicalDateTime.logicalDateTimeFormatter.format(LocalDateTime.now()));
-    }
-
-    /** The Constant MaxValue. */
-    public static final LogicalDateTime MaxValue = new LogicalDateTime(LocalDateTime.MAX);
-
-    /** The Constant MinValue. */
-    public static final LogicalDateTime MinValue = new LogicalDateTime(LocalDateTime.MIN);
-
-    /** The Constant UNDEFINED. */
-    public static final LogicalDateTime UNDEFINED = new LogicalDateTime(false);
-
-
-    /** The is defined. */
+    /**
+     * The logical date.
+     */
+    LocalDateTime logicalDate;
+    /**
+     * The is defined.
+     */
     boolean isDefined = true;
+
 
     /**
      * Instantiates a new logical date time.
@@ -81,6 +88,29 @@ public class LogicalDateTime implements Comparable<LogicalDateTime> {
     private LogicalDateTime(boolean isDefined) {
         logicalDate = null;
         isDefined = false;
+    }
+
+    /**
+     * Instantiates a new logical date time.
+     *
+     * @param dateTimeFrenchFormat the date time french format (ISO = JJ/MM/AAAA HH:MM:SS.SSSSSSS)
+     */
+    public LogicalDateTime(String dateTimeFrenchFormat) {
+        logicalDate = LocalDateTime.parse(dateTimeFrenchFormat, logicalDateTimeFormatter);
+    }
+
+    /**
+     * Instantiates a new logical date time.
+     *
+     * @param ldt the ldt
+     */
+    private LogicalDateTime(LocalDateTime ldt) {
+        logicalDate = ldt;
+    }
+
+    //Date logique de l'instant r�el courant
+    public static LogicalDateTime Now() {
+        return new LogicalDateTime(LogicalDateTime.logicalDateTimeFormatter.format(LocalDateTime.now()));
     }
 
     /**
@@ -101,21 +131,27 @@ public class LogicalDateTime implements Comparable<LogicalDateTime> {
     }
 
     /**
-     * Instantiates a new logical date time.
+     * Adds the.
      *
-     * @param dateTimeFrenchFormat the date time french format (ISO = JJ/MM/AAAA HH:MM:SS.SSSSSSS)
+     * @param date the date
+     * @param dt   the dt
+     * @return the logical date time
      */
-    public LogicalDateTime(String dateTimeFrenchFormat) {
-        logicalDate = LocalDateTime.parse(dateTimeFrenchFormat, logicalDateTimeFormatter);
+    public static LogicalDateTime add(LogicalDateTime date, LogicalDuration dt) {
+        if (!date.isDefined)
+            Logger.Fatal(null, "add", MessagesLogicalTimeDuration.LogicalDateIsNotDefined);
+
+        return new LogicalDateTime(date.logicalDate.plus(dt.logicalDuration));
     }
 
-    /**
-     * Instantiates a new logical date time.
-     *
-     * @param ldt the ldt
-     */
-    private LogicalDateTime(LocalDateTime ldt) {
-        logicalDate = ldt;
+    public static boolean EstBienStructuree(String dateDemandee) {
+        try {
+            LocalDateTime.parse(dateDemandee, logicalDateTimeFormatter);
+            return true;
+        } catch (Exception e) {
+            return false;
+
+        }
     }
 
     /**
@@ -152,21 +188,6 @@ public class LogicalDateTime implements Comparable<LogicalDateTime> {
     }
 
     /**
-     * Adds the.
-     *
-     * @param date the date
-     * @param dt the dt
-     * @return the logical date time
-     */
-    public static LogicalDateTime add(LogicalDateTime date, LogicalDuration dt) {
-        if (!date.isDefined)
-            Logger.Fatal(null, "add", MessagesLogicalTimeDuration.LogicalDateIsNotDefined);
-
-        return new LogicalDateTime(date.logicalDate.plus(dt.logicalDuration));
-    }
-
-
-    /**
      * Truncate to years.
      *
      * @return the logical date time
@@ -183,7 +204,6 @@ public class LogicalDateTime implements Comparable<LogicalDateTime> {
     public LogicalDateTime truncateToDays() {
         return new LogicalDateTime(logicalDate.truncatedTo(ChronoUnit.DAYS));
     }
-
 
     /**
      * Truncate to hours.
@@ -211,6 +231,7 @@ public class LogicalDateTime implements Comparable<LogicalDateTime> {
     public DayOfWeek getDayOfWeek() {
         return logicalDate.getDayOfWeek();
     }
+
     public int getMonthValue() {
         return logicalDate.getMonthValue();
     }
@@ -238,16 +259,6 @@ public class LogicalDateTime implements Comparable<LogicalDateTime> {
      */
     public LogicalDateTime getCopy() {
         return new LogicalDateTime(logicalDate);
-    }
-
-    public static boolean EstBienStructuree(String dateDemandee) {
-        try {
-            LocalDateTime.parse(dateDemandee, logicalDateTimeFormatter);
-            return true;
-        } catch (Exception e) {
-            return false;
-
-        }
     }
 }
 

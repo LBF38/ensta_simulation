@@ -32,7 +32,7 @@ public class YearScenario extends Scenario {
         while (currentDate.getMonthValue() < 10) {
             int monthCapacity = (int) (scenario.monthlyAttendance.get(currentDate.getMonthValue()) * maxCapacity);
             for (int i = 0; i < mondayArrivals.get(week); i++) {
-                var initClient = new InitClient("Client %d%d".formatted(week,i), attributedWorkshops(i, monthCapacity));
+                var initClient = new InitClient("Client %d%d".formatted(week, i), attributedWorkshops(i, monthCapacity));
                 send(new CreateClient(currentDate, this, initClient));
             }
             currentDate = currentDate.add(LogicalDuration.ofDay(7));
