@@ -14,12 +14,19 @@ import java.util.Dictionary;
 import java.util.List;
 import java.util.*;
 
+import static java.lang.Math.abs;
+
 @ToRecord(name = "Client")
 public class Client extends SimEntity {
     /**
      * Data showing which workshops the client has already done, so far.
      */
     private Dictionary<InitWorkshop.WorkshopType, Boolean> dailyWorkshops = new Hashtable<>();
+
+    /**
+     * The history of the activities the client have had in the center.
+     */
+    private HashMap<LogicalDateTime, List<Object>> clientHistory = new HashMap<LogicalDateTime, List<Object>>();
 
     /**
      * The time at which the client has started his workshop (initialized at the moment of creation).
@@ -66,7 +73,6 @@ public class Client extends SimEntity {
      * @param workshopType the type of the workshop to mark as done.
      */
     public void markWorkshopDone(WorkshopType workshopType) {
-
         if (workshopType != WorkshopType.RELAXATION && workshopType != WorkshopType.HOME) {
             this.dailyWorkshops.put(workshopType, true);
         }
@@ -100,7 +106,6 @@ public class Client extends SimEntity {
      * Reset the workshops done.
      */
     public void resetWorkshops() {
-
         this.dailyWorkshops = new Hashtable<>();
         List<WorkshopType> demandedWorkshops = Collections.list(this.getAttributedWorkshops().keys());
         for (InitWorkshop.WorkshopType demandedWorkshop : demandedWorkshops) {
@@ -108,7 +113,17 @@ public class Client extends SimEntity {
         }
     }
 
-    public void leaveCurationCenterForDay() {
+    public void addWorkshopToHistory(WorkshopType workshopType, Double efficiency) {
+        double duration = abs(this.getWorkshopStartingTime().add(this.getAttributedWorkshops().get(workshopType)).subtract(this.now()).getTotalOfMinutes());
+        List<Object> data = new ArrayList<>();
+        data.add(workshopType);
+        data.add(efficiency);
+        data.add(duration);
+        data.add(this.now());
+        this.clientHistory.put(this.getWorkshopStartingTime(), data);
+    }
 
+    public HashMap<LogicalDateTime, List<Object>> getHistory() {
+        return this.clientHistory;
     }
 }

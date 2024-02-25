@@ -71,6 +71,11 @@ public class Workshop extends SimEntity {
      */
     private List<Long> totalPerfectEfficiency = new ArrayList<>();
 
+    /**
+     * The history of the clients the workshop had hosted.
+     */
+    private HashMap<LogicalDateTime, List<Object>> workshopHistory = new HashMap<LogicalDateTime, List<Object>>();
+
 
     public Workshop(SimEngine engine, InitWorkshop ini) {
         super(engine, ini);
@@ -250,8 +255,11 @@ public class Workshop extends SimEntity {
                 double remaining_required_time = abs(start_time.add(client.getAttributedWorkshops().get(this.getType())).subtract(this.now()).getTotalOfMinutes());
                 double efficiency = 1 - (remaining_required_time / client.getAttributedWorkshops().get(this.getType()).getTotalOfMinutes());
                 Logger.Information(this, "endWorkshop", "%s ends the workshop %s at %s, with efficiency %s".formatted(client.getName(), this.getType(), this.now(), efficiency));
+                // Record information about the execution of the workshop.
                 this.dailyEfficiency += efficiency;
                 this.dailyPerfectEfficiency += 1;
+                client.addWorkshopToHistory(this.getType(), efficiency);
+                this.addClientToHistory(client, efficiency);
             }
             if (!client.getAttributedWorkshops().isEmpty() && !client.WorkshopsNotDone().isEmpty()) {
                 List<WorkshopType> remainingWorkshops = client.WorkshopsNotDone();
@@ -312,6 +320,20 @@ public class Workshop extends SimEntity {
 
     public void increaseDailyPerfectEfficiency() {
         this.dailyPerfectEfficiency++;
+    }
+
+    public void addClientToHistory(Client client, Double efficiency) {
+        double duration = abs(client.getWorkshopStartingTime().add(client.getAttributedWorkshops().get(this.getType())).subtract(this.now()).getTotalOfMinutes());
+        List<Object> data = new ArrayList<>();
+        data.add(client);
+        data.add(efficiency);
+        data.add(duration);
+        data.add(this.now());
+        this.workshopHistory.put(client.getWorkshopStartingTime(), data);
+    }
+
+    public HashMap<LogicalDateTime, List<Object>> getHistory() {
+        return this.workshopHistory;
     }
 
     @Override
