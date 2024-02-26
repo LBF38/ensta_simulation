@@ -28,6 +28,8 @@ To install this project, you have the choice with:
 ## Authors
 
 - [@LBF38](https://github.com/LBF38)
+- [@Arthurpers](https://github.com/Arthurpers)
+- [@CastelledSnake](https://github.com/CastelledSnake)
 
 
 
