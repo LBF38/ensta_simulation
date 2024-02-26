@@ -20,8 +20,10 @@ import java.util.concurrent.atomic.AtomicReference;
 @ToRecord(name = "Client")
 public class Client extends SimEntity {
     private final LinkedHashMap<LogicalDateTime, ClientHistory> history = new LinkedHashMap<>();
+    public int currentCureDay = 0;
     private List<WorkshopType> dailyWorkshops;
     private int currentEfficiency;
+    private int perfect_efficiency = 0;
     private LogicalDateTime workshop_start_time;
 
     public Client(SimEngine engine, InitClient ini) {
@@ -58,11 +60,12 @@ public class Client extends SimEntity {
     }
 
     public void resetDailyWorkshops() {
+        currentCureDay++;
         dailyWorkshops = new ArrayList<>(getAttributedWorkshops());
     }
 
     public void updateHistory(LogicalDateTime date, Workshop workshop) {
-        var client_history = new ClientHistory(workshop, getEfficiency());
+        var client_history = new ClientHistory(workshop, getEfficiency(), currentCureDay * getDailyMaxEfficiency());
         history.put(date, client_history);
     }
 
@@ -87,13 +90,31 @@ public class Client extends SimEntity {
             Logger.Data(new IRecordable() {
                 @Override
                 public String[] getTitles() {
-                    return new String[]{"Client", "Date", "Workshop", "WorkshopType", "WorkshopState", "Efficiency"};
+                    return new String[]{
+                            "Client",
+                            "Date",
+                            "Workshop",
+                            "WorkshopType",
+                            "WorkshopState",
+                            "Efficiency",
+                            "PerfectEfficiency",
+                            "MaxCureEfficiency"
+                    };
                 }
 
                 @Override
                 public String[] getRecords() {
                     var client_history = entry.getValue();
-                    return new String[]{getName(), entry.getKey().toString(), client_history.workshop().getName(), client_history.workshop().getType().toString(), client_history.workshop().getWorkshopState().toString(), String.valueOf(client_history.efficiency())};
+                    return new String[]{
+                            getName(),
+                            entry.getKey().toString(),
+                            client_history.workshop().getName(),
+                            client_history.workshop().getType().toString(),
+                            client_history.workshop().getWorkshopState().toString(),
+                            String.valueOf(client_history.efficiency()),
+                            String.valueOf(client_history.perfectEfficiency()),
+                            String.valueOf(21 * getDailyMaxEfficiency())
+                    };
                 }
 
                 @Override
@@ -106,6 +127,17 @@ public class Client extends SimEntity {
 
     public int getEfficiency() {
         return currentEfficiency;
+    }
+
+    public int getDailyMaxEfficiency() {
+        var dailyMaxEfficiency = 0;
+        for (var workshop : getAttributedWorkshops()) {
+            var w = search(e -> e instanceof Workshop && ((Workshop) e).getType() == workshop);
+            if (w.isEmpty()) continue;
+            dailyMaxEfficiency += ((Workshop) w.get(0)).getEfficiency();
+        }
+        Logger.Information(this, "Client - getDailyMaxEfficiency", "Daily max efficiency: %d".formatted(dailyMaxEfficiency));
+        return dailyMaxEfficiency;
     }
 
     public LogicalDateTime getWorkshopStartTime() {
