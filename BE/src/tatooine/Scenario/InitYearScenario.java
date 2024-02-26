@@ -5,6 +5,9 @@ import enstabretagne.base.time.LogicalDateTime;
 
 import java.util.Map;
 
+/**
+ * The initial data of a year scenario.
+ */
 public class InitYearScenario extends ScenarioInitData {
     public Map<Integer, Double> monthlyAttendance;
     public int maxInstituteCapacity;

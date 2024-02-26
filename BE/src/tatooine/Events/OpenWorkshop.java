@@ -6,6 +6,9 @@ import enstabretagne.base.time.LogicalDateTime;
 import enstabretagne.base.time.LogicalDuration;
 import tatooine.Workshop.Workshop;
 
+/**
+ * The event describing a workshop opening after night, or a fix.
+ */
 public class OpenWorkshop extends SimEvent<Workshop> {
     public OpenWorkshop(LogicalDateTime occurrenceDate, Workshop workshop) {
         super(occurrenceDate, workshop, null);

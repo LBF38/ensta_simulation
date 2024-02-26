@@ -10,6 +10,9 @@ import utils.DateTimeFrenchFormat;
 
 import java.util.LinkedList;
 
+/**
+ * The plan of a simulation lasting for one month.
+ */
 public class MonthPlan extends Plan {
     LogicalDateTime start;
     LogicalDateTime end;
@@ -22,6 +25,9 @@ public class MonthPlan extends Plan {
         this.end = end;
     }
 
+    /**
+     * Initializes the scenarios of the plan.
+     */
     @Override
     public void initScenarii() {
         var affluence = new MonthlyAffluence(new LogicalDateTime(DateTimeFrenchFormat.of(1, 1, 2024)), 0.5);

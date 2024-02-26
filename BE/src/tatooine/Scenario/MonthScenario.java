@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * A scenario that lasts a single month, taking into account different days of activity, but a static set of clients.
+ */
 public class MonthScenario extends Scenario {
     public MonthScenario(SimEngine engine, InitMonthScenario init) {
         super(engine, init);

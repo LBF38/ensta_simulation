@@ -8,6 +8,9 @@ import tatooine.Scenario.SimpleScenario;
 
 import java.util.LinkedList;
 
+/**
+ * The plan of a simple simulation (not taking into account any modification in the number of clients, or affluence).
+ */
 public class SimplePlan extends Plan {
 
     LogicalDateTime start;

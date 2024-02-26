@@ -9,6 +9,9 @@ import tatooine.Client.Client;
 import tatooine.Workshop.Workshop;
 import tatooine.Workshop.WorkshopTime;
 
+/**
+ * The event that updates all data to enter a new day.
+ */
 public class RecordData extends SimEvent<SimEntity> {
     public RecordData(LogicalDateTime occurrenceDate, SimEntity simEntity) {
         super(occurrenceDate, simEntity, null);

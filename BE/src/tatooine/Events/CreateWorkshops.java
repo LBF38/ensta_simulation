@@ -15,6 +15,10 @@ import tatooine.Workshop.WorkshopTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The event describing the creation of all workshops.
+ * Here, data are given in a static form, but it could be read from a file or a database, to extend the code to other organisations.
+ */
 public class CreateWorkshops extends SimEvent<SimEntity> {
     public CreateWorkshops(LogicalDateTime occurrenceDate, SimEntity from) {
         super(occurrenceDate, from, null);

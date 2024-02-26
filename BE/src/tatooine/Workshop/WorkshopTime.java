@@ -6,6 +6,9 @@ import jakarta.json.bind.JsonbBuilder;
 import jakarta.json.bind.annotation.JsonbProperty;
 import utils.DateTimeFrenchFormat;
 
+/**
+ * The time-dealing class of a workshop.
+ */
 public record WorkshopTime(int day, int month, int year, int hour,
                            int minute,
                            int second, int nanosecond) {

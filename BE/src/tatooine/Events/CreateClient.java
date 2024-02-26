@@ -8,6 +8,9 @@ import enstabretagne.base.time.LogicalDuration;
 import tatooine.Client.Client;
 import tatooine.Client.InitClient;
 
+/**
+ * The event describing a Client creation.
+ */
 public class CreateClient extends SimEvent<SimEntity> {
     private final InitClient initClient;
 

@@ -6,6 +6,10 @@ import enstabretagne.base.time.LogicalDateTime;
 import tatooine.Plan.YearPlan;
 import utils.DateTimeFrenchFormat;
 
+/**
+ * The main class of the application.
+ * The simulations should be launched from that file.
+ */
 public class App {
     public static void main(String[] args) {
         Logger.load();
