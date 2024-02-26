@@ -224,7 +224,7 @@ public class Workshop extends SimEntity {
 
         queue.removeIf(c -> c.equals(client));
         if (!currentClients.contains(client)) currentClients.add(client);
-        client.updateHistory(now(), this);
+        client.updateHistory(now(), this); // starts the workshop
         client.setWorkshopStartTime(this.now());
 
         Logger.Information(this, "startWorkshop", "%s starts the workshop %s at %s for %s".formatted(client.getName(), this.getType(), this.now(), this.getDuration()));
@@ -240,7 +240,7 @@ public class Workshop extends SimEntity {
             client.addEfficiency(client_efficiency);
 
             currentClients.remove(client);
-            client.updateHistory(now(), this);
+            client.updateHistory(now(), this); // finishes the workshop
 
             Logger.Information(this, "endWorkshop", "%s ends the workshop %s at %s".formatted(client.getName(), this.getType(), this.now()));
 
