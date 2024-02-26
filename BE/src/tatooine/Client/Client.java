@@ -11,16 +11,17 @@ import tatooine.Workshop.Distances;
 import tatooine.Workshop.InitWorkshop.WorkshopType;
 import tatooine.Workshop.Workshop;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 @ToRecord(name = "Client")
 public class Client extends SimEntity {
+    private final LinkedHashMap<LogicalDateTime, ClientHistory> history = new LinkedHashMap<>();
     private List<WorkshopType> dailyWorkshops;
     private int currentEfficiency;
-    private Map<LogicalDateTime, ClientHistory> history = new HashMap<>();
+    private LogicalDateTime workshop_start_time;
 
     public Client(SimEngine engine, InitClient ini) {
         super(engine, ini);
@@ -56,7 +57,7 @@ public class Client extends SimEntity {
     }
 
     public void resetDailyWorkshops() {
-        dailyWorkshops = getAttributedWorkshops();
+        dailyWorkshops = new ArrayList<>(getAttributedWorkshops());
     }
 
     public void updateHistory(LogicalDateTime date, Workshop workshop) {
@@ -79,14 +80,22 @@ public class Client extends SimEntity {
     }
 
     public void logHistory() {
-        Logger.DataSimple("%s's history".formatted(this.getName()), "Date", "Workshop", "Efficiency");
+        Logger.DataSimple("Client history", "Date", "Workshop", "Efficiency");
         for (var entry : history.entrySet()) {
-            Logger.DataSimple("%s's history".formatted(this.getName()), entry.getKey(), entry.getValue().workshop(), entry.getValue().efficiency());
+            Logger.DataSimple(this.getName(), entry.getKey(), entry.getValue().workshop(), entry.getValue().efficiency());
         }
     }
 
     public int getEfficiency() {
         return currentEfficiency;
+    }
+
+    public LogicalDateTime getWorkshopStartTime() {
+        return workshop_start_time;
+    }
+
+    public void setWorkshopStartTime(LogicalDateTime time) {
+        workshop_start_time = time;
     }
 
     @ToRecord(name = "Name")

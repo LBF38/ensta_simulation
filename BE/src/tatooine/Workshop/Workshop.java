@@ -193,11 +193,11 @@ public class Workshop extends SimEntity {
     }
 
     public boolean isOpen() {
-        return now().compareTo(opening) >= 0 && now().compareTo(closing) < 0;
+        return getWorkshopState() == WorkshopState.OPEN;
     }
 
     public boolean isClosed() {
-        return now().compareTo(closing) >= 0;
+        return getWorkshopState() == WorkshopState.CLOSED;
     }
 
     @ToRecord(name = "currentClients")
@@ -225,6 +225,7 @@ public class Workshop extends SimEntity {
         queue.removeIf(c -> c.equals(client));
         if (!currentClients.contains(client)) currentClients.add(client);
         client.updateHistory(now(), this);
+        client.setWorkshopStartTime(this.now());
 
         Logger.Information(this, "startWorkshop", "%s starts the workshop %s at %s for %s".formatted(client.getName(), this.getType(), this.now(), this.getDuration()));
         send(new EndWorkshop(now().add(getDuration()), client, this));
@@ -232,10 +233,10 @@ public class Workshop extends SimEntity {
 
     public void endWorkshop(Client client) {
         if (currentClients.contains(client)) {
-            // TODO: add the efficiency to the client based on the time spent in the workshop
             // => formula: client_efficiency = (duration - timeSpent) / duration * workshop_efficiency
-            var start = client.getStartFromWorkshop(this);
+            var start = client.getWorkshopStartTime();
             var client_efficiency = this.now().subtract(start).getTotalOfMinutes() / getDuration().getTotalOfMinutes() * getEfficiency();
+            Logger.Detail(this, "endWorkshop", "%s efficiency: %s".formatted(client.getName(), client_efficiency));
             client.addEfficiency(client_efficiency);
 
             currentClients.remove(client);
@@ -243,12 +244,22 @@ public class Workshop extends SimEntity {
 
             Logger.Information(this, "endWorkshop", "%s ends the workshop %s at %s".formatted(client.getName(), this.getType(), this.now()));
 
-            if (client.hasDailyWorkshops()) {
-                var nextWorkshopType = client.getNextWorkshop();
-                var workshopDistance = Distances.getWalkingDuration(this.getType(), nextWorkshopType);
-                send(new GoToWorkshop(this.now().add(workshopDistance), client, nextWorkshopType));
+            if (!client.hasDailyWorkshops()) {
+                Logger.Information(this, "endWorkshop", "The client %s has finished all his workshops for today.".formatted(client.getName()));
+                client.resetDailyWorkshops();
+                var client_next_workshop = client.getNextWorkshop();
+                var nextWorkshop = this.getEngine().search(e -> e instanceof Workshop && ((Workshop) e).getType() == client_next_workshop);
+                if (nextWorkshop.isEmpty()) {
+                    Logger.Information(this, "endWorkshop", "No workshop %s found for the client %s".formatted(client.getNextWorkshop(), client.getName()));
+                    return;
+                }
+                var w = (Workshop) nextWorkshop.get(0);
+                send(new GoToWorkshop(w.getNextOpening(), client, w.getType()));
+                return;
             }
-            // TODO: add an event or something for the client to come back next day as he has finished all his workshops for today.
+            var nextWorkshopType = client.getNextWorkshop();
+            var workshopDistance = Distances.getWalkingDuration(this.getType(), nextWorkshopType);
+            send(new GoToWorkshop(this.now().add(workshopDistance), client, nextWorkshopType));
         }
         // The next client in the queue starts the workshop
         if (getNextClient() == null) return;
@@ -263,7 +274,7 @@ public class Workshop extends SimEntity {
         currentClients.forEach(client -> this.send(new EndWorkshop(this.now(), client, this)));
         // clear the queue and reschedule all waiting clients to the next day
         // TODO: make this depend on the workshop type (e.g. relaxation workshop doesn't have a queue) and the frequenting type => FREE/PLANNED workshops.
-        queue.forEach(client -> this.send(new GoToWorkshop(this.opening.add(LogicalDuration.ofDay(1)), client, this.getType())));
+        queue.forEach(client -> this.send(new GoToWorkshop(getNextOpening(), client, this.getType())));
         queue.clear();
     }
 
@@ -318,10 +329,15 @@ public class Workshop extends SimEntity {
         this.setWorkshopState(WorkshopState.RECOVERING);
 
         // reschedule the opening and closing of the workshop
-        var nextOpening = new LogicalDateTime(DateTimeFrenchFormat.of(this.now().add(LogicalDuration.ofDay(1)).truncateToDays(), getOpening().getHour(), getOpening().getMinute()));
-        var nextClosing = new LogicalDateTime(DateTimeFrenchFormat.of(this.now().add(LogicalDuration.ofDay(1)).truncateToDays(), getClosing().getHour(), getClosing().getMinute()));
+        send(new OpenWorkshop(getNextOpening(), this));
+        send(new CloseWorkshop(getNextClosing(), this));
+    }
 
-        send(new OpenWorkshop(nextOpening, this));
-        send(new CloseWorkshop(nextClosing, this));
+    private LogicalDateTime getNextClosing() {
+        return new LogicalDateTime(DateTimeFrenchFormat.of(this.now().add(LogicalDuration.ofDay(1)).truncateToDays(), getClosing().getHour(), getClosing().getMinute()));
+    }
+
+    private LogicalDateTime getNextOpening() {
+        return new LogicalDateTime(DateTimeFrenchFormat.of(this.now().add(LogicalDuration.ofDay(1)).truncateToDays(), getOpening().getHour(), getOpening().getMinute()));
     }
 }
