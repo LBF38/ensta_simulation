@@ -7,6 +7,9 @@ import tatooine.Client.Client;
 import tatooine.Workshop.InitWorkshop.WorkshopType;
 import tatooine.Workshop.Workshop;
 
+/**
+ * The event of a client going to a workshop.
+ */
 public class GoToWorkshop extends SimEvent<Client> {
     private final WorkshopType workshop;
 
@@ -51,7 +54,7 @@ public class GoToWorkshop extends SimEvent<Client> {
             this.from.send(new StartWorkshop(this.getOccurrenceDate(), this.from, w));
             return;
         }
-
+        // If the client cannot be added to the workshop, or its queue, they go to the relaxation workshop.
         if (r.getType() == WorkshopType.RELAXATION) {
             // By default, the client goes to the relaxation workshop if the workshop is closed or full.
             Logger.Information(this, "GoToWorkshop", "The workshop %s is closed or full, the client %s goes to the relaxation workshop".formatted(this.workshop, this.from.getName()));

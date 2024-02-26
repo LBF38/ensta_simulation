@@ -6,6 +6,9 @@ import enstabretagne.base.time.LogicalDateTime;
 import tatooine.Client.Client;
 import tatooine.Workshop.Workshop;
 
+/**
+ * The event of a client starting a workshop.
+ */
 public class StartWorkshop extends SimEvent<Client> {
     private final Workshop workshop;
 

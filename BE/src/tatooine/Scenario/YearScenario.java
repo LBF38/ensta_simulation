@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * A scenario that lasts a year, taking into account different months, and a changing clients set.
+ */
 public class YearScenario extends Scenario {
     public YearScenario(SimEngine engine, InitYearScenario init) {
         super(engine, init);

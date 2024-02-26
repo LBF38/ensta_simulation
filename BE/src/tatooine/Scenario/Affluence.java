@@ -8,9 +8,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The class that generates the base affluence of the institute on Mondays : the day of new Clients arrival.
+ */
 public class Affluence {
     private static final List<Double> mondaysArrivals = new ArrayList<>();
 
+    /**
+     * Generates the affluence of the institute for Mondays.
+     * @param maxCapacity The maximum capacity of the institute.
+     * @param monthlyAttendance The monthly attendance of the institute.
+     * @return The affluence of the institute on Mondays.
+     */
     public static List<Double> generateMondaysArrivals(int maxCapacity, Map<Integer, Double> monthlyAttendance) {
         LogicalDateTime currentDate = new LogicalDateTime(DateTimeFrenchFormat.of(1, 3, 2024));
         while (currentDate.getDayOfWeek().getValue() != 1) { //Find first Monday of the month

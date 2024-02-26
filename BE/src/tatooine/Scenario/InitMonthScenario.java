@@ -3,6 +3,9 @@ package tatooine.Scenario;
 import engine.ScenarioInitData;
 import enstabretagne.base.time.LogicalDateTime;
 
+/**
+ * The initial data of a month scenario.
+ */
 public class InitMonthScenario extends ScenarioInitData {
     public MonthlyAffluence affluence;
     public int maxInstituteCapacity;

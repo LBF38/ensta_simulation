@@ -9,6 +9,9 @@ import tatooine.Scenario.YearScenario;
 import java.util.LinkedList;
 import java.util.Map;
 
+/**
+ * The plan of a simulation lasting for one year, taking into account differences between months.
+ */
 public class YearPlan extends Plan {
     LogicalDateTime start;
     LogicalDateTime end;
@@ -25,8 +28,6 @@ public class YearPlan extends Plan {
     @Override
     public void initScenarii() {
         //open config file in ./config/institue.json
-
-
         Map<Integer, Double> monthlyAttendance =
                 Map.of(3, 0.5,
                         4, 0.6,
@@ -34,8 +35,8 @@ public class YearPlan extends Plan {
                         6, 0.8,
                         7, 0.95,
                         8, 0.9,
-                        9, 0.65);
-
+                        9, 0.65
+                );
         for (int i = 0; i < getReplicas(); i++) {
             scenarios.add(new YearScenario(getEngine(), new InitYearScenario("Year Scenario", start, end, i, 2, monthlyAttendance, 180)));
         }

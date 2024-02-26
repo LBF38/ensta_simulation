@@ -3,6 +3,9 @@ package tatooine.Scenario;
 import engine.ScenarioInitData;
 import enstabretagne.base.time.LogicalDateTime;
 
+/**
+ * The initial data of a scenario.
+ */
 public class InitScenario extends ScenarioInitData {
     public int nbClients;
 

@@ -17,6 +17,9 @@ import utils.DateTimeFrenchFormat;
 import java.util.LinkedList;
 import java.util.Queue;
 
+/**
+ * The useful parts of the institute : places where clients can do activities.
+ */
 @ToRecord(name = "Workshop")
 public class Workshop extends SimEntity {
     /**
@@ -47,6 +50,9 @@ public class Workshop extends SimEntity {
      * In days.
      */
     private final LogicalDuration failureRecovery;
+    /**
+     * The initial data of the workshop
+     */
     private final InitWorkshop initData;
     private final Queue<Client> queue = new LinkedList<>();
     private final Queue<Client> currentClients = new LinkedList<>();
@@ -78,7 +84,6 @@ public class Workshop extends SimEntity {
     protected void init() {
         super.init();
         send(new OpenWorkshop(this.opening, this));
-        // TODO: add the failure event
         var failureFrequency = getRandomFailureFrequency();
         Logger.Detail(this, "init", "Workshop %s failure frequency: %s".formatted(this.getType(), failureFrequency));
         if (getType() != WorkshopType.RELAXATION && getType() != WorkshopType.HOME)
@@ -169,6 +174,12 @@ public class Workshop extends SimEntity {
         return queue.size();
     }
 
+    /**
+     * Add a client to the workshop queue
+     *
+     * @param client the client to add
+     * @return true if the client was added, false otherwise
+     */
     public boolean addClient(Client client) {
         if (canAddClient()) {
             Logger.Detail(this, "addClient", "%s added to the workshop %s queue.".formatted(client.getName(), this));
@@ -179,10 +190,20 @@ public class Workshop extends SimEntity {
         return false;
     }
 
+    /**
+     * Check if the workshop can add one client to its queue
+     *
+     * @return true if the workshop can add a client, false otherwise
+     */
     public boolean canAddClient() {
         return queue.size() < getQueueCapacity();
     }
 
+    /**
+     * Get the next client from the queue into the workshop
+     *
+     * @return the next client in the queue
+     */
     public Client getNextClient() {
         if (getQueueType() == QueueType.RANDOM) {
             // TODO: implement the randomized queue.
@@ -205,7 +226,13 @@ public class Workshop extends SimEntity {
         return currentClients;
     }
 
+    /**
+     * Makes a Client start the workshop
+     *
+     * @param client the client that accesses the workshop
+     */
     public void startWorkshop(Client client) {
+        // If the workshop is in failure, the client is not added to the queue, and will try again next day.
         if (getWorkshopState() == WorkshopState.FAILURE) {
             Logger.Information(this, "startWorkshop", "The workshop %s is in failure, the client %s is not added to the queue.".formatted(this.getType(), client.getName()));
             send(new GoToWorkshop(this.now().add(LogicalDuration.ofDay(1)), client, this.getType()));
@@ -231,6 +258,11 @@ public class Workshop extends SimEntity {
         send(new EndWorkshop(now().add(getDuration()), client, this));
     }
 
+    /**
+     * Makes a Client end and leave the workshop
+     *
+     * @param client the client that ends the workshop
+     */
     public void endWorkshop(Client client) {
         if (currentClients.contains(client)) {
             // => formula: client_efficiency = (duration - timeSpent) / duration * workshop_efficiency
@@ -244,6 +276,7 @@ public class Workshop extends SimEntity {
 
             Logger.Information(this, "endWorkshop", "%s ends the workshop %s at %s".formatted(client.getName(), this.getType(), this.now()));
 
+            // The client has finished all his workshops for today : their next workshop is tomorrow.
             if (!client.hasDailyWorkshops()) {
                 Logger.Information(this, "endWorkshop", "The client %s has finished all his workshops for today.".formatted(client.getName()));
                 client.resetDailyWorkshops();
@@ -257,15 +290,19 @@ public class Workshop extends SimEntity {
                 send(new GoToWorkshop(w.getNextOpening(), client, w.getType()));
                 return;
             }
+            // The client has other workshops for today : their next workshop is the next one in their to-do list.
             var nextWorkshopType = client.getNextWorkshop();
             var workshopDistance = Distances.getWalkingDuration(this.getType(), nextWorkshopType);
             send(new GoToWorkshop(this.now().add(workshopDistance), client, nextWorkshopType));
         }
-        // The next client in the queue starts the workshop
+        // The next client in the queue (if any) starts the workshop
         if (getNextClient() == null) return;
         send(new StartWorkshop(now(), getNextClient(), this));
     }
 
+    /**
+     * Close the workshop, either at the closing time, or after a failure
+     */
     public void closeWorkshop() {
         Logger.Information(this, "closeWorkshop", "Close workshop %s at %s".formatted(this.getName(), this.now()));
         // update workshop state
@@ -286,6 +323,9 @@ public class Workshop extends SimEntity {
         return getWorkshopState() == WorkshopState.RECOVERING;
     }
 
+    /**
+     * Open the workshop (either after a recovery, or at the opening time of the workshop
+     */
     public void openWorkshop() {
         Logger.Information(this, "openWorkshop", "Open workshop %s at %s".formatted(this.getName(), this.now()));
         // update workshop state

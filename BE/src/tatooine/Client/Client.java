@@ -19,11 +19,20 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @ToRecord(name = "Client")
 public class Client extends SimEntity {
+    /**
+     * The history of the client, i.e. the metrics to evaluate the efficiency of the visits they have paid to workshops.
+     */
     private final LinkedHashMap<LogicalDateTime, ClientHistory> history = new LinkedHashMap<>();
     public int currentCureDay = 0;
+    /**
+     * The list of workshops the client still has to visit before the day ends.
+     */
     private List<WorkshopType> dailyWorkshops;
     private int currentEfficiency;
     private int perfect_efficiency = 0;
+    /**
+     * The time at which the client have started the current workshop.
+     */
     private LogicalDateTime workshop_start_time;
 
     public Client(SimEngine engine, InitClient ini) {
@@ -50,6 +59,12 @@ public class Client extends SimEntity {
         return getAttributedWorkshops().size();
     }
 
+    /**
+     * Get the next workshop the client has to visit
+     * Currently, the clients can only visit workshops in the order they are assigned to.
+     *
+     * @return the next workshop the client has to visit
+     */
     public WorkshopType getNextWorkshop() {
         // TODO: implement a random choice for the next workshop
         return dailyWorkshops.remove(0);
@@ -64,6 +79,12 @@ public class Client extends SimEntity {
         dailyWorkshops = new ArrayList<>(getAttributedWorkshops());
     }
 
+    /**
+     * Adds the result of a visit to the history of the Client.
+     *
+     * @param date the date of the visit
+     * @param workshop the workshop the client has visited
+     */
     public void updateHistory(LogicalDateTime date, Workshop workshop) {
         var client_history = new ClientHistory(workshop, getEfficiency(), currentCureDay * getDailyMaxEfficiency());
         history.put(date, client_history);
@@ -83,6 +104,9 @@ public class Client extends SimEntity {
         return start.get();
     }
 
+    /**
+     * Log the whole history of the client.
+     */
     public void logHistory() {
         Logger.Information(this, "Client History - log", "Log the client's history");
 //        Logger.DataSimple("Distances - log", "Workshop1", "Workshop2", "Duration");

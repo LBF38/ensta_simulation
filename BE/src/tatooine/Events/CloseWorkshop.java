@@ -6,6 +6,9 @@ import enstabretagne.base.time.LogicalDateTime;
 import enstabretagne.base.time.LogicalDuration;
 import tatooine.Workshop.Workshop;
 
+/**
+ * The event describing a workshop closing.
+ */
 public class CloseWorkshop extends SimEvent<Workshop> {
     public CloseWorkshop(LogicalDateTime occurrenceDate, Workshop workshop) {
         super(occurrenceDate, workshop, null);

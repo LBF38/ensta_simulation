@@ -4,11 +4,26 @@ import engine.InitData;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
 
+/**
+ * The initial data of a workshop.
+ */
 public class InitWorkshop extends InitData {
+    /**
+     * The json builder, in order to be able to instantiate a workshop reading a json file.
+     */
     private static final Jsonb jsonb = JsonbBuilder.create();
     public final WorkshopType type;
+    /**
+     * The type of schedule that the workshop tolerates
+     */
     public Frequenting frequenting;
+    /**
+     * The maximum number of clients that the workshop can handle simultaneously.
+     */
     public int capacity;
+    /**
+     * The opening and closing time of the workshop
+     */
     public WorkshopTime opening;
     public WorkshopTime closing;
     /**

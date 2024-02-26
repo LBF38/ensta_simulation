@@ -5,6 +5,9 @@ import enstabretagne.base.logger.Logger;
 import enstabretagne.base.time.LogicalDateTime;
 import tatooine.Workshop.Workshop;
 
+/**
+ * The event of a workshop recovering from a failure.
+ */
 public class RecoveringWorkshop extends SimEvent<Workshop> {
     public RecoveringWorkshop(LogicalDateTime occurrenceDate, Workshop workshop) {
         super(occurrenceDate, workshop, null);

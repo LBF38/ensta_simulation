@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * The data defining the walking durations between workshops.
+ */
 @ToRecord(name = "Distances")
 public class Distances {
     private static final HashMap<List<InitWorkshop.WorkshopType>, LogicalDuration> walkingDurations = new HashMap<>();
