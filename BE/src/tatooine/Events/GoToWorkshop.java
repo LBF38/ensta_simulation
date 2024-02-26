@@ -38,7 +38,7 @@ public class GoToWorkshop extends SimEvent<Client> {
         var relaxation = this.from.getEngine().search(e -> e instanceof Workshop && ((Workshop) e).getType() == WorkshopType.RELAXATION);
 
         if (workshop.isEmpty()) {
-            Logger.Warning(this, "GoToWorkshop", "No workshop found for the client %s".formatted(this.from.getName()));
+            Logger.Warning(this, "GoToWorkshop", "No workshop %s found for the client %s".formatted(this.workshop, this.from.getName()));
             return;
         }
 

@@ -35,7 +35,7 @@ public class CreateWorkshops extends SimEvent<SimEntity> {
         initWorkshops.add(new InitWorkshop("bains à jets", WorkshopType.BAIN, InitWorkshop.Frequenting.FREE, open_7_15, close_14, 9, 20, 10, 35, 4, 2, QueueType.ORGANIZED, 15));
         initWorkshops.add(new InitWorkshop("douches", WorkshopType.DOUCHE, InitWorkshop.Frequenting.FREE, open_7_15, close_14, 8, 10, 10, 49, 2, 2, QueueType.RANDOM, 8));
         initWorkshops.add(new InitWorkshop("soins du visage", WorkshopType.VISAGE, InitWorkshop.Frequenting.FREE, open_7_15, close_14, 8, 10, 5, 365, 40, 1, QueueType.RANDOM, 5));
-        initWorkshops.add(new InitWorkshop("Relaxation - détente", WorkshopType.RELAXATION, InitWorkshop.Frequenting.FREE, open_7_15, close_14, 999, 999, 0, 0, 0, 0, QueueType.RANDOM, 999));
+        initWorkshops.add(new InitWorkshop("Relaxation - détente", WorkshopType.RELAXATION, InitWorkshop.Frequenting.FREE, open_7_15, close_14, 999, 15, 0, 0, 0, 0, QueueType.RANDOM, 0));
         // ^ TODO: enhance the RELAXATION workshop.
         // TODO: add unused workshop.
         // TODO: add infinite workshop.
