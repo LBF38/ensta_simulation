@@ -2,6 +2,7 @@ package tatooine.Client;
 
 import engine.SimEngine;
 import engine.SimEntity;
+import enstabretagne.base.logger.IRecordable;
 import enstabretagne.base.logger.Logger;
 import enstabretagne.base.logger.ToRecord;
 import enstabretagne.base.time.LogicalDateTime;
@@ -80,9 +81,26 @@ public class Client extends SimEntity {
     }
 
     public void logHistory() {
-        Logger.DataSimple("Client history", "Date", "Workshop", "Efficiency");
+        Logger.Information(this, "Client History - log", "Log the client's history");
+//        Logger.DataSimple("Distances - log", "Workshop1", "Workshop2", "Duration");
         for (var entry : history.entrySet()) {
-            Logger.DataSimple(this.getName(), entry.getKey(), entry.getValue().workshop(), entry.getValue().efficiency());
+            Logger.Data(new IRecordable() {
+                @Override
+                public String[] getTitles() {
+                    return new String[]{"Client", "Date", "Workshop", "WorkshopType", "WorkshopState", "Efficiency"};
+                }
+
+                @Override
+                public String[] getRecords() {
+                    var client_history = entry.getValue();
+                    return new String[]{getName(), entry.getKey().toString(), client_history.workshop().getName(), client_history.workshop().getType().toString(), client_history.workshop().getWorkshopState().toString(), String.valueOf(client_history.efficiency())};
+                }
+
+                @Override
+                public String getClassement() {
+                    return "Client History";
+                }
+            });
         }
     }
 
